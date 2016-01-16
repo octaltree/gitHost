@@ -1,13 +1,38 @@
 #!/usr/bin/python3
 
 import sys
-import argparse
+import http.client
+#import argparse
+
+hubkey = "5d880030bec3f4445204"
+hubsecret = "5adba848859bac5638f11cf51b2367a60e104a9f"
 
 # main :: IO Int
 def main():
-    parser = argparse.ArgumentParser()
-    args = parser.parse_args()
+    #parser = argparse.ArgumentParser()
+    #args = parser.parse_args()
+    prms = sys.argv[1:]
+    hubOauth(hubkey, hubsecret, "repo")
     return 0
+
+# hubOauth :: Str -> Str -> Str -> 
+def hubOauth(key, secret, scope):
+    method = "GET"
+    hostname = "github.com"
+    path = "/login/oauth/authorize"
+    url = "https://github.com/login/oauth/authorize"
+    #params = { "client_id": key
+    #        , "scope": scope
+    #        , "state": "asdfjkl"
+    #        }
+    conn = http.client.HTTPSConnection(hostname)
+    conn.request(method, path)
+    response = conn.getresponse()
+    if response.status != 200 :
+        print(response.read())
+        exit(str(response.status) + " " + response.reason)
+    print(response.read())
+    undefined
 
 # undefined :: a
 undefined = None
