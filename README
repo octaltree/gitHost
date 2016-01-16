@@ -1,0 +1,7 @@
+# git-host コマンド
+
+## 機能
+## issue
+1. github, bitbucket, gitlab/gitlab.comのリポジトリ一覧を出力
+2. github, bitbucket, gitlab/gitlab.comにリポジトリ作成
+3. 引数パース
