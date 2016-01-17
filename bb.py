@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 
 import sys
+import urllib.parse
+import http.client
+import json
+from enum import Enum
 
 # main :: IO Int
 def main():
