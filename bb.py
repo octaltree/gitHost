@@ -9,48 +9,37 @@ from enum import Enum
 bucketkey = "jn7Py6A4XXaXY6FLS9"
 bucketsecret = "EDfSJfKU8UGkQCeGNYks9tShsqWR8QRT"
 # "https://bitbucket.org/site/oauth2/authorize?client_id=%s&response_type=code" % bucketkey
-# でapi tokenをもらってくる
-buckettoken="BRFMz9UyrGcJEaGDMx"
+# でcodeをもらってくる
+code="BRFMz9UyrGcJEaGDMx"
+#curl -X POST -u "client_id:secret" \
+#  https://bitbucket.org/site/oauth2/access_token \
+#  -d grant_type=authorization_code -d code={code}
+# でaccess tokenにかえる
+# 一時間で有効切れになるのでreferesh tokenも保存しておく
+
+# headerに足す
+# Authorization: Brearer access_token
 
 # main :: IO Int
 def main():
     args = sys.argv[1:]
-
     useragent = "gitHost"
-    method = "GET"
-    hostname = "bitbucket.org"
-    path = "/site/oauth2/authorize"
-    query = urllib.parse.urlencode({
-        "client_id": bucketkey,
-        "response_type": "code"})
-    header = {
-            "User-Agent": useragent}
-    url = urllib.parse.urlunparse(("", "", path, "", query, ""))
-    #conn = http.client.HTTPSConnection(hostname)
-    #conn.request(method, url, headers = header)
-    #response = conn.getresponse()
-    #print(response.read())
-    #print(str(response.status) + "  " + response.reason)
-    getBucketRepos()
+    getBucketRepos("octaltree")
     return 0
 
-def getBucketRepos():
+def getBucketRepos(owner):
+    method = "GET"
     hostname = "api.bitbuket.org"
-    pathbase = "/2.0/repositories"
-    path = pathbase + "/octaltree"
+    endpoint = "/2.0/repositories"
+    path = endpoint + "/%s" % owner
     url = urllib.parse.urlunparse(("", "", path, "", "", ""))
     header = {
             "User-Agent": "getHost"}
-    method = "GET"
-
-    print(url)
     conn = http.client.HTTPSConnection(hostname)
     conn.request(method, url, headers = header)
     response = conn.getresponse()
     print(response.read())
     print(str(response.status) + "  " + response.reason)
-
-
 
 # undefined :: a
 undefined = None
