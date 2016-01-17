@@ -6,13 +6,16 @@ import http.client
 import json
 from enum import Enum
 
-bucketkey = "7bbXmBy2GsC9arwn6A"
-bucketsecret = "KfXWYDhsdLkNbC52v25ZVgDXhJV2rWTR"
-buckettoken = "RPt7yEvBw6HdRf7rFY"
+bucketkey = "jn7Py6A4XXaXY6FLS9"
+bucketsecret = "EDfSJfKU8UGkQCeGNYks9tShsqWR8QRT"
+# "https://bitbucket.org/site/oauth2/authorize?client_id=%s&response_type=code" % bucketkey
+# でapi tokenをもらってくる
+buckettoken="BRFMz9UyrGcJEaGDMx"
 
 # main :: IO Int
 def main():
     args = sys.argv[1:]
+
     useragent = "gitHost"
     method = "GET"
     hostname = "bitbucket.org"
