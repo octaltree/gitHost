@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import sys
-import urllib.parse
-import urllib.request
+#import urllib.parse
+#import urllib.request
 import http.client
 import json
 from enum import Enum
@@ -26,14 +26,9 @@ USERAGENT = "gitHost"
 # main :: IO Int
 def main():
     args = sys.argv[1:]
-    tokenjson = "" +\
-            '{ "access_token": "hISQ-Yqa6x8Vzd9JJbJUjHwnL6g6m8LLSvUmsvTuVQMSE8M-0Fy9ZXdw2mXXHJxuPHarKLvwV4QXZPcFYQ=="\n' +\
-            ', "scopes": "repository:write"\n' +\
-            ', "expires_in": 3600\n' +\
-            ', "refresh_token": "Be3gjjHwwhe5nHXFdw"\n' +\
-            ', "token_type": "bearer"\n' +\
-            '}\n'
-    print(tokenjson)
+    tokenjson = '{"access_token": "JAb-xAUopHf8jmwSp1jvUv4oH1lqpgrYWqTJAS5Qz13UcuLifgWwYYhnjUmBQ_grS1qfxrwqjb_WVnYqkw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
+    tokens = json.loads(tokenjson) # :: dic
+    print(getBucketRepos(tokens['access_token'], "octaltree"))
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
@@ -60,24 +55,31 @@ def getBucketToken(consumerkey, consumersecret, code): # TODO
     print(opener)
     print(request)
     print(response)
-    print(response.getheader())
+    print(response.getheaders())
     print(response.read())
     return undefined
 
-def getBucketRepos(owner): # TODO
-    method = "GET"
-    hostname = "api.bitbuket.org"
-    endpoint = "/2.0/repositories"
-    path = endpoint + "/%s" % owner
-    url = urllib.parse.urlunparse(("", "", path, "", "", ""))
-    header = {
-            "User-Agent": "getHost"}
-    conn = http.client.HTTPSConnection(hostname)
-    conn.request(method, url, headers = header)
-    response = conn.getresponse()
-    print(response.read())
-    print(str(response.status) + "  " + response.reason)
-    return undefined
+# getBucketRepos :: Str -> Str -> IO Str
+def getBucketRepos(token, owner): # TODO 例外処理, ProxyHandler
+    import urllib.request
+    import urllib.parse
+    req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % owner,
+            headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
+    response = urllib.request.urlopen(req)
+    charset = charsetFromContentType(response.getheader('content-type'))
+    return response.read().decode(charset if charset != '' else 'utf-8')
+
+# charsetFromContentType :: Str -> Str
+def charsetFromContentType(str):
+    import re
+    # 基本''を返す 指定してあればそれを返す
+    lines = str.split(';')
+    charsets = list(filter(lambda s: 'charset' in s, lines))
+    if len(charsets) == 0 :
+        return ''
+    charset = charsets.pop().replace(' ', '')
+    mat = re.match('^charset=(.*?)[;]*$', charset)
+    return mat.group(1) if mat else ''
 
 # undefined :: a
 undefined = None
