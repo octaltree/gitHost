@@ -1,11 +1,8 @@
 #!/usr/bin/python3
 
-import sys
-#import urllib.parse
-#import urllib.request
-import http.client
-import json
-from enum import Enum
+#from enum import Enum
+
+USERAGENT = "gitHost"
 
 bucketkey="Ev4c4krDQqHyRd2XH6"
 bucketsecret="TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar"
@@ -21,10 +18,11 @@ bucketcode="6z7mS3RUT2d2EHnJqP"
 # headerに足す
 # Authorization: Brearer access_token
 
-USERAGENT = "gitHost"
 
 # main :: IO Int
 def main():
+    import sys
+    import json
     args = sys.argv[1:]
     tokenjson = '{"access_token": "JAb-xAUopHf8jmwSp1jvUv4oH1lqpgrYWqTJAS5Qz13UcuLifgWwYYhnjUmBQ_grS1qfxrwqjb_WVnYqkw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
