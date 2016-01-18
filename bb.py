@@ -27,9 +27,14 @@ def main():
     import sys
     import json
     args = sys.argv[1:]
-    tokenjson = '{"access_token": "YnJtD_W8EO_VdfIukTjAP8B6Ld2-NoHq08I-UaYGhjnew-LCLAuqH26V1WSrVFUeOMi_gHfMryDD0nnOdw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
+    tokenjson = '{"access_token": "dL9riXdCKK6wleqHlQ2tzcupig9uPeSDnNuVBA265T5aEm8Mq0xKV0QXM8h3n1VXLEi1yWl53-UWre6Yjw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
-    print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
+    if len(args) == 0 :
+        return 0
+    elif args[0] == "show" :
+        print(getBucketRepos(tokens['access_token'], "octaltree"))
+    elif args[0] == "new" :
+        print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
