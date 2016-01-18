@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-#from enum import Enum
+from enum import Enum
 
 USERAGENT = "gitHost"
 
@@ -18,6 +18,10 @@ bucketcode="6z7mS3RUT2d2EHnJqP"
 # headerに足す
 # Authorization: Brearer access_token
 
+class FakedEither(Enum):
+    Left = 0
+    Right = 1
+
 
 # main :: IO Int
 def main():
@@ -27,7 +31,6 @@ def main():
     tokenjson = '{"access_token": "JAb-xAUopHf8jmwSp1jvUv4oH1lqpgrYWqTJAS5Qz13UcuLifgWwYYhnjUmBQ_grS1qfxrwqjb_WVnYqkw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
     #print(getBucketRepos(tokens['access_token'], "octaltree"))
-    print(getBucketRepos("asdf", "octaltree"))
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
@@ -58,7 +61,7 @@ def getBucketToken(consumerkey, consumersecret, code): # TODO
     print(response.read())
     return undefined
 
-# getBucketRepos :: Str -> Str -> IO Str
+# getBucketRepos :: Str -> Str -> IO (FakedEither, HTTPError|Str)
 def getBucketRepos(token, owner): # TODO ProxyHandler
     import urllib.request
     import urllib.parse
@@ -68,9 +71,9 @@ def getBucketRepos(token, owner): # TODO ProxyHandler
     try:
         response = urllib.request.urlopen(req)
         charset = charsetFromContentType(response.getheader('content-type'))
-        return response.read().decode(charset if charset != '' else 'utf-8')
-    except urllib.error.URLError as e:
-        return None
+        return (FakedEither.Right, response.read().decode(charset if charset != '' else 'utf-8'))
+    except urllib.error.HTTPError as e:
+        return (FakedEither.Left, e)
 
 # charsetFromContentType :: Str -> Str
 def charsetFromContentType(str):
