@@ -19,6 +19,8 @@ bucketcode="e3nXWdQAZJv5ftz5ep"
 # headerに足す
 # Authorization: Brearer access_token
 
+# Either返さずログだして死んでもいいかも
+
 class FakedEither(Enum):
     Left = 0
     Right = 1
@@ -35,7 +37,8 @@ def main():
     elif args[0] == "show" :
         print(getBucketRepos(tokens['access_token'], "octaltree"))
     elif args[0] == "new" :
-        print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
+        #print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
+        print(newBucketRepo('dummy', "octaltree", "apitest2")[1].read())
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
@@ -76,12 +79,12 @@ def newBucketRepo(token, user, reponame, repoalias = ''): # TODO 例外, ProxyHa
     req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s/%s" % (urllib.parse.quote(user), reponame),
             data = urllib.parse.urlencode({"name": "%s" % repoalias}).encode('utf-8'), # BytesUtf8
             headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
-
-    print(req.full_url)
-    response = urllib.request.urlopen(req)
-    charset = charsetFromContentType(response.getheader('content-type'))
-    return (FakedEither.Right, response.read().decode(charset if charset != '' else 'utf-8'))
-    return undefined
+    try:
+        response = urllib.request.urlopen(req)
+        charset = charsetFromContentType(response.getheader('content-type'))
+        return (FakedEither.Right, response.read().decode(charset if charset != '' else 'utf-8'))
+    except urllib.error.HTTPError as e:
+        return (FakedEither.Left, e)
 
 # getBucketRepos :: Str -> Str -> IO (FakedEither, HTTPError|Str)
 def getBucketRepos(token, user): # TODO ProxyHandler
