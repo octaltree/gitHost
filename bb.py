@@ -26,7 +26,8 @@ def main():
     args = sys.argv[1:]
     tokenjson = '{"access_token": "JAb-xAUopHf8jmwSp1jvUv4oH1lqpgrYWqTJAS5Qz13UcuLifgWwYYhnjUmBQ_grS1qfxrwqjb_WVnYqkw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
-    print(getBucketRepos(tokens['access_token'], "octaltree"))
+    #print(getBucketRepos(tokens['access_token'], "octaltree"))
+    print(getBucketRepos("asdf", "octaltree"))
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
@@ -58,14 +59,18 @@ def getBucketToken(consumerkey, consumersecret, code): # TODO
     return undefined
 
 # getBucketRepos :: Str -> Str -> IO Str
-def getBucketRepos(token, owner): # TODO 例外処理, ProxyHandler
+def getBucketRepos(token, owner): # TODO ProxyHandler
     import urllib.request
     import urllib.parse
+    import urllib.error
     req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % owner,
             headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
-    response = urllib.request.urlopen(req)
-    charset = charsetFromContentType(response.getheader('content-type'))
-    return response.read().decode(charset if charset != '' else 'utf-8')
+    try:
+        response = urllib.request.urlopen(req)
+        charset = charsetFromContentType(response.getheader('content-type'))
+        return response.read().decode(charset if charset != '' else 'utf-8')
+    except urllib.error.URLError as e:
+        return None
 
 # charsetFromContentType :: Str -> Str
 def charsetFromContentType(str):
