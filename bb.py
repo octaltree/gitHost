@@ -26,12 +26,17 @@ USERAGENT = "gitHost"
 # main :: IO Int
 def main():
     args = sys.argv[1:]
-    tokenjson=getBucketToken(bucketkey, bucketsecret, bucketcode)
+    tokenjson = "" +\
+            '{ "access_token": "hISQ-Yqa6x8Vzd9JJbJUjHwnL6g6m8LLSvUmsvTuVQMSE8M-0Fy9ZXdw2mXXHJxuPHarKLvwV4QXZPcFYQ=="\n' +\
+            ', "scopes": "repository:write"\n' +\
+            ', "expires_in": 3600\n' +\
+            ', "refresh_token": "Be3gjjHwwhe5nHXFdw"\n' +\
+            ', "token_type": "bearer"\n' +\
+            '}\n'
     print(tokenjson)
-    #getBucketRepos("octaltree")
     return 0
 
-def getBucketToken(consumerkey, consumersecret, code):
+def getBucketToken(consumerkey, consumersecret, code): # TODO
     scheme = "https"
     schemehandler = urllib.request.HTTPSHandler()
     netloc = "bitbucket.org"
@@ -59,7 +64,7 @@ def getBucketToken(consumerkey, consumersecret, code):
     print(response.read())
     return undefined
 
-def getBucketRepos(owner):
+def getBucketRepos(owner): # TODO
     method = "GET"
     hostname = "api.bitbuket.org"
     endpoint = "/2.0/repositories"
