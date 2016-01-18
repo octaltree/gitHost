@@ -28,7 +28,7 @@ def main():
     import sys
     import json
     args = sys.argv[1:]
-    tokenjson = '{"access_token": "JAb-xAUopHf8jmwSp1jvUv4oH1lqpgrYWqTJAS5Qz13UcuLifgWwYYhnjUmBQ_grS1qfxrwqjb_WVnYqkw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
+    tokenjson = '{"access_token": "0PeUklqkNMMpaIeWdt82cz_xKdaDyq-ToKa-P174Nonq04lcR1U2NjWk1T3-t2WR-Qg4hsI4U5QuU6Yxeg==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
     #print(getBucketRepos(tokens['access_token'], "octaltree"))
     return 0
