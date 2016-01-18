@@ -6,9 +6,10 @@ USERAGENT = "gitHost"
 
 bucketkey="Ev4c4krDQqHyRd2XH6"
 bucketsecret="TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar"
+# repo read, admin権限必要
 # "https://bitbucket.org/site/oauth2/authorize?client_id=%s&response_type=code" % bucketkey
 # でcodeをもらってくる
-bucketcode="6z7mS3RUT2d2EHnJqP"
+bucketcode="e3nXWdQAZJv5ftz5ep"
 #curl -X POST -u "client_id:secret" \
 #  https://bitbucket.org/site/oauth2/access_token \
 #  -d grant_type=authorization_code -d code={code}
@@ -27,7 +28,7 @@ def main():
     import sys
     import json
     args = sys.argv[1:]
-    tokenjson = '{"access_token": "dL9riXdCKK6wleqHlQ2tzcupig9uPeSDnNuVBA265T5aEm8Mq0xKV0QXM8h3n1VXLEi1yWl53-UWre6Yjw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
+    tokenjson = '{"access_token": "BT535y_dasc86qnjY8DFETAno_dc2fr4HxbNEHu0b0JEFC0x294zak8J9BBHoWulzxNOr1BmLIJq-cQrOg==", "scopes": "repository:admin repository", "expires_in": 3600, "refresh_token": "D6F7ZrFEmLqDh9cPms", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
     if len(args) == 0 :
         return 0
@@ -65,14 +66,15 @@ def getBucketToken(consumerkey, consumersecret, code): # TODO
     print(response.read())
     return undefined
 
-def newBucketRepo(token, user, reponame): # TODO 例外, ProxyHandler
+def newBucketRepo(token, user, reponame, repoalias = ''): # TODO 例外, ProxyHandler
     import urllib.request
     import urllib.parse
     import urllib.error
     # is_private 標準がfalseなのでtrueに
     # 付随してfork_policyやらいろいろ
+    repoalias = reponame if repoalias == '' else repoalias
     req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s/%s" % (urllib.parse.quote(user), reponame),
-            data = b'',
+            data = urllib.parse.urlencode({"name": "%s" % repoalias}).encode('utf-8'), # BytesUtf8
             headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
 
     print(req.full_url)
