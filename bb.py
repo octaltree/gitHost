@@ -2,15 +2,16 @@
 
 import sys
 import urllib.parse
+import urllib.request
 import http.client
 import json
 from enum import Enum
 
-bucketkey = "jn7Py6A4XXaXY6FLS9"
-bucketsecret = "EDfSJfKU8UGkQCeGNYks9tShsqWR8QRT"
+bucketkey="Ev4c4krDQqHyRd2XH6"
+bucketsecret="TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar"
 # "https://bitbucket.org/site/oauth2/authorize?client_id=%s&response_type=code" % bucketkey
 # でcodeをもらってくる
-code="BRFMz9UyrGcJEaGDMx"
+bucketcode="6z7mS3RUT2d2EHnJqP"
 #curl -X POST -u "client_id:secret" \
 #  https://bitbucket.org/site/oauth2/access_token \
 #  -d grant_type=authorization_code -d code={code}
@@ -20,12 +21,43 @@ code="BRFMz9UyrGcJEaGDMx"
 # headerに足す
 # Authorization: Brearer access_token
 
+USERAGENT = "gitHost"
+
 # main :: IO Int
 def main():
     args = sys.argv[1:]
-    useragent = "gitHost"
-    getBucketRepos("octaltree")
+    tokenjson=getBucketToken(bucketkey, bucketsecret, bucketcode)
+    print(tokenjson)
+    #getBucketRepos("octaltree")
     return 0
+
+def getBucketToken(consumerkey, consumersecret, code):
+    scheme = "https"
+    schemehandler = urllib.request.HTTPSHandler()
+    netloc = "bitbucket.org"
+    path = "/site/oauth2/access_token"
+    data = urllib.parse.urlencode([
+        ("grant_type", "authorization_code"),
+        ("code", "%s" % code)]).encode('utf-8') # :: Bytes
+    headers = { "User-Agent": USERAGENT,
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    url = urllib.parse.urlunparse((scheme, netloc, path, "", "", "")) # :: Str
+
+    passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+    passmgr.add_password(None, url, consumerkey, consumersecret)
+    opener = urllib.request.build_opener(schemehandler,
+            urllib.request.HTTPBasicAuthHandler(passmgr))
+    #opener.open(url)
+    urllib.request.install_opener(opener)
+    request = urllib.request.Request(url, data, headers)
+    response = urllib.request.urlopen(request)
+    print(passmgr)
+    print(opener)
+    print(request)
+    print(response)
+    print(response.getheader())
+    print(response.read())
+    return undefined
 
 def getBucketRepos(owner):
     method = "GET"
@@ -40,6 +72,7 @@ def getBucketRepos(owner):
     response = conn.getresponse()
     print(response.read())
     print(str(response.status) + "  " + response.reason)
+    return undefined
 
 # undefined :: a
 undefined = None
