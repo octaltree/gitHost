@@ -22,15 +22,14 @@ class FakedEither(Enum):
     Left = 0
     Right = 1
 
-
 # main :: IO Int
 def main():
     import sys
     import json
     args = sys.argv[1:]
-    tokenjson = '{"access_token": "0PeUklqkNMMpaIeWdt82cz_xKdaDyq-ToKa-P174Nonq04lcR1U2NjWk1T3-t2WR-Qg4hsI4U5QuU6Yxeg==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
+    tokenjson = '{"access_token": "YnJtD_W8EO_VdfIukTjAP8B6Ld2-NoHq08I-UaYGhjnew-LCLAuqH26V1WSrVFUeOMi_gHfMryDD0nnOdw==", "scopes": "repository:write", "expires_in": 3600, "refresh_token": "Be3gjjHwwhe5nHXFdw", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
-    #print(getBucketRepos(tokens['access_token'], "octaltree"))
+    print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
@@ -61,12 +60,28 @@ def getBucketToken(consumerkey, consumersecret, code): # TODO
     print(response.read())
     return undefined
 
-# getBucketRepos :: Str -> Str -> IO (FakedEither, HTTPError|Str)
-def getBucketRepos(token, owner): # TODO ProxyHandler
+def newBucketRepo(token, user, reponame): # TODO 例外, ProxyHandler
     import urllib.request
     import urllib.parse
     import urllib.error
-    req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % owner,
+    # is_private 標準がfalseなのでtrueに
+    # 付随してfork_policyやらいろいろ
+    req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s/%s" % (urllib.parse.quote(user), reponame),
+            data = b'',
+            headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
+
+    print(req.full_url)
+    response = urllib.request.urlopen(req)
+    charset = charsetFromContentType(response.getheader('content-type'))
+    return (FakedEither.Right, response.read().decode(charset if charset != '' else 'utf-8'))
+    return undefined
+
+# getBucketRepos :: Str -> Str -> IO (FakedEither, HTTPError|Str)
+def getBucketRepos(token, user): # TODO ProxyHandler
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+    req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % urllib.parse.quote(user),
             headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
     try:
         response = urllib.request.urlopen(req)
