@@ -9,7 +9,7 @@ bucketsecret="TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar"
 # repo read, admin権限必要
 # "https://bitbucket.org/site/oauth2/authorize?client_id=%s&response_type=code" % bucketkey
 # でcodeをもらってくる
-bucketcode="tutamjd6dvgEAHvjCL"
+bucketcode="FPHfbzscQt5NkAFWvp"
 #curl -X POST -u "client_id:secret" \
 #  https://bitbucket.org/site/oauth2/access_token \
 #  -d grant_type=authorization_code -d code={code}
@@ -30,12 +30,12 @@ def main():
     import sys
     import json
     args = sys.argv[1:]
-    tokenjson = '{"access_token": "ww4kV7XDktyh2EnbB6GZr3HwIIv5WqNkF3KYqh4HCO477fhSoHMiBb5COf89weIELKjndkN4ni69RgTu", "scopes": "repository:admin", "expires_in": 3600, "refresh_token": "YvZBeUwQNaVuQRKubB", "token_type": "bearer"}'
+    tokenjson = '{"access_token": "IPtUkL9sfExd-xaah13WoUBp4f678CflHO6U77hzhPol-6SHUoru1A3NzDXK36g8mmxzM1ziXBAU-h-6fw==", "scopes": "repository:admin repository", "expires_in": 3600, "refresh_token": "2g7VCmzNcR8p3XDWa6", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
     if len(args) == 0 :
         return 0
     elif args[0] == "show" :
-        print(getBucketRepos(tokens['access_token'], "octaltree"))
+        print(getBucketReposWithProxy(tokens['access_token'], "octaltree"))
     elif args[0] == "new" :
         #print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
         print(newBucketRepo('dummy', "octaltree", "apitest2")[1].read())
@@ -93,6 +93,25 @@ def getBucketRepos(token, user): # TODO ProxyHandler
     import urllib.error
     req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % urllib.parse.quote(user),
             headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
+    try:
+        response = urllib.request.urlopen(req)
+        charset = charsetFromContentType(response.getheader('content-type'))
+        return (FakedEither.Right, response.read().decode(charset if charset != '' else 'utf-8'))
+    except urllib.error.HTTPError as e:
+        return (FakedEither.Left, e)
+
+# getBucketRepos :: Str -> Str -> IO (FakedEither, HTTPError|Str)
+def getBucketReposWithProxy(token, user): # TODO
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+    req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % urllib.parse.quote(user),
+            headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
+    opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({
+                "http":  'proxy.uec.ac.jp:8080',
+                "https":  'proxy.uec.ac.jp:8080'}))
+    urllib.request.install_opener(opener)
     try:
         response = urllib.request.urlopen(req)
         charset = charsetFromContentType(response.getheader('content-type'))
