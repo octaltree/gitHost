@@ -46,12 +46,15 @@ def refreshBucketAccessToken(clientkey, clientsecret, refreshtoken):
     import urllib.parse
     import urllib.request
     import urllib.error
+    import base64
     url = "https://bitbucket.org/site/oauth2/access_token"
     data = urllib.parse.urlencode([
         ("grant_type", "refresh_token"),
         ("refresh_token", "%s" % refreshtoken)]).encode('utf-8') # :: Bytes
     headers = {
-            "Authorization": "Basic %s" % clientsecret}
+            "Authorization": "Basic %s" % base64.b64encode((clientkey + ":" + clientsecret).encode('utf-8')).decode('utf-8'),
+            "User-Agent": "curl/7.35.0"}
+    print(headers)
     req = urllib.request.Request(url, data=data, headers=headers)
     passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
     passmgr.add_password(None, url, clientkey, clientsecret)
