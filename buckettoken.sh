@@ -2,7 +2,7 @@
 
 bucketkey="Ev4c4krDQqHyRd2XH6"
 bucketsecret="TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar"
-bucketcode="FPHfbzscQt5NkAFWvp"
+bucketcode="4RcZ8CTkBe6FAFzNhP"
 
 
 curl -X POST -u "$bucketkey:$bucketsecret" \

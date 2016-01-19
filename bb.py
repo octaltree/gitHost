@@ -9,7 +9,7 @@ bucketsecret="TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar"
 # repo read, admin権限必要
 # "https://bitbucket.org/site/oauth2/authorize?client_id=%s&response_type=code" % bucketkey
 # でcodeをもらってくる
-bucketcode="FPHfbzscQt5NkAFWvp"
+bucketcode="4RcZ8CTkBe6FAFzNhP"
 #curl -X POST -u "client_id:secret" \
 #  https://bitbucket.org/site/oauth2/access_token \
 #  -d grant_type=authorization_code -d code={code}
@@ -30,7 +30,7 @@ def main():
     import sys
     import json
     args = sys.argv[1:]
-    tokenjson = '{"access_token": "IPtUkL9sfExd-xaah13WoUBp4f678CflHO6U77hzhPol-6SHUoru1A3NzDXK36g8mmxzM1ziXBAU-h-6fw==", "scopes": "repository:admin repository", "expires_in": 3600, "refresh_token": "2g7VCmzNcR8p3XDWa6", "token_type": "bearer"}'
+    tokenjson = '{"access_token": "As8tJt_YaeymjnKwow8t9XASqUX20MgCvczFbyYIbJrjNIbAj1IC0zRWPmaFul1WO0zyQhYJMt-hpcaOqA==", "scopes": "repository:admin repository", "expires_in": 3600, "refresh_token": "2g7VCmzNcR8p3XDWa6", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
     refreshBucketAccessToken(bucketkey, bucketsecret, tokens['refresh_token'])
     #if len(args) == 0 :
