@@ -8,7 +8,8 @@ labtoken="YxP7jS3Ut7JhyxYDWKSz"
 def main():
     import sys
     args = sys.argv[1:]
-    test()
+    #test()
+    createRepo()
     return undefined
 
 def test():
@@ -26,6 +27,24 @@ def test():
         print(response.status, response.reason)
     except urllib.request.HTTPError as e:
         print(e.read())
+
+def createRepo():
+    import urllib.parse
+    import urllib.request
+    import urllib.error
+    url = "https://gitlab.com/api/v3/projects"
+    headers = {
+            "PRIVATE-TOKEN": "%s" % labtoken}
+    req = urllib.request.Request(url, data = b'name=asdfjkl', headers = headers)
+    try:
+        response = urllib.request.urlopen(req)
+        print(response.read().decode('utf-8'))
+        print(response.getheaders())
+        print(response.status, response.reason)
+    except urllib.request.HTTPError as e:
+        print(e.read())
+        print(e.getheaders())
+        print(e.status, e.reason)
 
 
 # undefined :: a
