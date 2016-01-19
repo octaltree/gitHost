@@ -32,14 +32,46 @@ def main():
     args = sys.argv[1:]
     tokenjson = '{"access_token": "IPtUkL9sfExd-xaah13WoUBp4f678CflHO6U77hzhPol-6SHUoru1A3NzDXK36g8mmxzM1ziXBAU-h-6fw==", "scopes": "repository:admin repository", "expires_in": 3600, "refresh_token": "2g7VCmzNcR8p3XDWa6", "token_type": "bearer"}'
     tokens = json.loads(tokenjson) # :: dic
-    if len(args) == 0 :
-        return 0
-    elif args[0] == "show" :
-        print(getBucketRepos(tokens['access_token'], "octaltree"))
-    elif args[0] == "new" :
-        print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
-        #print(newBucketRepo('dummy', "octaltree", "apitest2")[1].read())
+    refreshBucketAccessToken(bucketkey, bucketsecret, tokens['refresh_token'])
+    #if len(args) == 0 :
+    #    return 0
+    #elif args[0] == "show" :
+    #    print(getBucketRepos(tokens['access_token'], "octaltree"))
+    #elif args[0] == "new" :
+    #    print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
+    #    #print(newBucketRepo('dummy', "octaltree", "apitest2")[1].read())
     return 0
+
+def refreshBucketAccessToken(clientkey, clientsecret, refreshtoken):
+    import urllib.parse
+    import urllib.request
+    import urllib.error
+    url = "https://bitbucket.org/site/oauth2/access_token"
+    data = urllib.parse.urlencode([
+        ("grant_type", "refresh_token"),
+        ("refresh_token", "%s" % refreshtoken)]).encode('utf-8') # :: Bytes
+    headers = {
+            "Authorization": "Basic %s" % clientsecret}
+    req = urllib.request.Request(url, data=data, headers=headers)
+    passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+    passmgr.add_password(None, url, clientkey, clientsecret)
+    #passmgr.add_password(None, "//bitbucket.org/site/oauth2/access_token", clientkey, clientsecret)
+    #passmgr.add_password(None, "/site/oauth2/access_token", clientkey, clientsecret)
+    #passmgr.add_password(None, "https://bitbucket.org", clientkey, clientsecret)
+    #passmgr.add_password(None, "bitbucket.org", clientkey, clientsecret)
+    #passmgr.add_password(None, "http://bitbucket.org", clientkey, clientsecret)
+    opener = urllib.request.build_opener(
+            #urllib.request.HTTPHandler(req),
+            #urllib.request.HTTPSHandler(req),
+            #urllib.request.ProxyHandler(),
+            urllib.request.HTTPBasicAuthHandler(passmgr))
+    urllib.request.install_opener(opener)
+    try:
+        response = urllib.request.urlopen(req)
+        print(response.read())
+    except urllib.request.HTTPError as e:
+        print(e.read())
+    return undefined
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
     scheme = "https"
