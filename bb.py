@@ -35,10 +35,10 @@ def main():
     if len(args) == 0 :
         return 0
     elif args[0] == "show" :
-        print(getBucketReposWithProxy(tokens['access_token'], "octaltree"))
+        print(getBucketRepos(tokens['access_token'], "octaltree"))
     elif args[0] == "new" :
-        #print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
-        print(newBucketRepo('dummy', "octaltree", "apitest2")[1].read())
+        print(newBucketRepo(tokens['access_token'], "octaltree", "apitest2"))
+        #print(newBucketRepo('dummy', "octaltree", "apitest2")[1].read())
     return 0
 
 def getBucketToken(consumerkey, consumersecret, code): # TODO
@@ -108,9 +108,7 @@ def getBucketReposWithProxy(token, user): # TODO
     req = urllib.request.Request("https://api.bitbucket.org/2.0/repositories/%s" % urllib.parse.quote(user),
             headers = { "User-Agent": USERAGENT, "Authorization": "Bearer %s" % token})
     opener = urllib.request.build_opener(
-            urllib.request.ProxyHandler({
-                "http":  'proxy.uec.ac.jp:8080',
-                "https":  'proxy.uec.ac.jp:8080'}))
+            urllib.request.ProxyHandler())
     urllib.request.install_opener(opener)
     try:
         response = urllib.request.urlopen(req)
