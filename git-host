@@ -35,10 +35,11 @@ def getBucketUserOwnRepos(user, token):
         return urllib.request.urlopen(req)
     except urllib.error.HTTPError as e:
         exctype, excval, exctraceback = sys.exc_info()
+        traceback.print_tb(exctraceback)
         print(e.status, e.reason, file=sys.stderr)
         print(e.getheaders(), file=sys.stderr)
         print(e.read(), file=sys.stderr)
-        traceback.print_tb(exctraceback)
+        exit(1)
 
 # :: Str -> Str -> urllib.request.HTTPResponse
 def getHubUserOwnRepos(user, token):
