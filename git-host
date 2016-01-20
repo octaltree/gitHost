@@ -37,12 +37,17 @@ def http(request):
         return urllib.request.urlopen(request)
     except urllib.error.HTTPError as e:
         #exctype, excval, exctraceback = sys.exc_info()
-        print(e.status, e.reason, file=sys.stderr)
-        print(e.getheaders(), file=sys.stderr)
-        print(e.read(), file=sys.stderr)
-        print("full_url: ", request.full_url, file=sys.stderr)
-        print("data: ", request.data, file=sys.stderr)
-        print("headers: ", request.header_items(), file=sys.stderr)
+        print("*** Request", file=sys.stderr)
+        print(" ", request.get_method(), request.full_url, file=sys.stderr)
+        #print(" ", request.header_items(), file=sys.stderr)
+        [print(" ", tpl, file=sys.stderr) for tpl in request.header_items()]
+        print(" ", request.data, file=sys.stderr)
+        print("", file=sys.stderr)
+        print("*** Response", file=sys.stderr)
+        print(" ", e.status, e.reason, file=sys.stderr)
+        #print(" ", e.getheaders(), file=sys.stderr)
+        [print(" ", tpl, file=sys.stderr) for tpl in e.getheaders()]
+        print(" ", e.read(), file=sys.stderr)
         exit(1)
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
