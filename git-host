@@ -12,6 +12,10 @@ import json
 import re
 #import logging
 
+# undefined :: a
+undefined = None
+
+# USERAGENT :: Str
 USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubで怒られる
 
 # main :: IO Int
@@ -22,12 +26,12 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
     #print(args)
-    response = getOwnBucketRepos("signagemapapp", "mSUvKh02fgOBgdbQauSsTbirtX3ANBqg4fTUmgig6EyG6o1opWeEay0-zkRoSlLrG6CGBFyx35RxT_bV7g==")
+    #response = getOwnBucketRepos("signagemapapp", "mSUvKh02fgOBgdbQauSsTbirtX3ANBqg4fTUmgig6EyG6o1opWeEay0-zkRoSlLrG6CGBFyx35RxT_bV7g==")
     #response = getOwnBucketRepos("octaltree", "dummy")
     #print(response.read())
     #print(response.getheaders())
     #print(response.status, response.reason)
-    print(json.dumps(body(response)))
+    #print(json.dumps(body(response)))
     return undefined
 
 # :: urllib.request.Request -> IO urllib.request.HTTPResponse
@@ -95,8 +99,6 @@ def newOwnHubRepo():
 def newOwnLabRepo():
     return undefined
 
-# undefined :: a
-undefined = None
 
 if __name__ == "__main__" :
   exit(main())
