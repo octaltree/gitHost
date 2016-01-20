@@ -21,7 +21,7 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
     #print(args)
-    getBucketUserOwnRepos("octaltree", "dummy")
+    #getBucketUserOwnRepos("octaltree", "dummy")
     return undefined
 
 # :: Str -> Str -> urllib.request.HTTPResponse
@@ -43,11 +43,53 @@ def getBucketUserOwnRepos(user, token):
 
 # :: Str -> Str -> urllib.request.HTTPResponse
 def getHubUserOwnRepos(user, token):
-    return undefined
+    url = "https://api.github.com/user/repos"
+    headers = {
+            "User-Agent": USERAGENT,
+            "Authorization": "token %s" % token}
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        return urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        exctype, excval, exctraceback = sys.exc_info()
+        traceback.print_tb(exctraceback)
+        print(e.status, e.reason, file=sys.stderr)
+        print(e.getheaders(), file=sys.stderr)
+        print(e.read(), file=sys.stderr)
+        exit(1)
 
 # :: Str -> Str -> urllib.request.HTTPResponse
 def getLabUserOwnRepos(user, token):
-    return undefined
+    url = "https://gitlab.com/api/v3/projects"
+    headers = {
+            "User-Agent": USERAGENT,
+            "PRIVATE-TOKEN": "%s" % token}
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        return urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        exctype, excval, exctraceback = sys.exc_info()
+        traceback.print_tb(exctraceback)
+        print(e.status, e.reason, file=sys.stderr)
+        print(e.getheaders(), file=sys.stderr)
+        print(e.read(), file=sys.stderr)
+        exit(1)
+
+# :: Str -> [(Str, Str)] -> urllib.request.HTTPResponse
+def httpGet(url, headers={}, data=None):
+    headers.update({'User-Content': "%s" % USERAGENT})
+    req = urllib.request.Request(url, b'test', headers=headers, method='GET')
+    try:
+        return urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        exctype, excval, exctraceback = sys.exc_info()
+        traceback.print_tb(exctraceback)
+        print(e.status, e.reason, file=sys.stderr)
+        print(e.getheaders(), file=sys.stderr)
+        print(e.read(), file=sys.stderr)
+        exit(1)
+
+
 
 # undefined :: a
 undefined = None
