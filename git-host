@@ -26,13 +26,10 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
     #print(args)
-    #response = getOwnBucketRepos("signagemapapp", "mSUvKh02fgOBgdbQauSsTbirtX3ANBqg4fTUmgig6EyG6o1opWeEay0-zkRoSlLrG6CGBFyx35RxT_bV7g==")
-    #response = getOwnBucketRepos("octaltree", "dummy")
-    #print(response.read())
-    #print(response.getheaders())
-    #print(response.status, response.reason)
-    #print(json.dumps(body(response)))
-    print((lambda x: x * 2)(4))
+
+    response = getOwnBucketRepos("octaltree", "L77RXViFwqKQnQLJNNSoPxFVA4QGdsHhlI4FWprfQFJFYOSyq-3YjK1HW1NBCUq88Ip2Bn0Ygaz3I_90Ig==")
+    repos = json.loads(body(response))['values'] # :: Dict
+    [print(urlFullNameBucketRepo(repo)) for repo in repos]
     return undefined
 
 # :: Dict -> Str
