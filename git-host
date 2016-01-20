@@ -21,6 +21,18 @@ def main():
     print(args)
     return undefined
 
+# :: Str -> Str -> urllib.request.HTTPResponse
+def getBucketUserOwnRepos(user, token):
+    return undefined
+
+# :: Str -> Str -> urllib.request.HTTPResponse
+def getHubUserOwnRepos(user, token):
+    return undefined
+
+# :: Str -> Str -> urllib.request.HTTPResponse
+def getLabUserOwnRepos(user, token):
+    return undefined
+
 # undefined :: a
 undefined = None
 
