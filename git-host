@@ -22,27 +22,12 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
     #print(args)
-    #response = getBucketUserOwnRepos("octaltree", "alh2BF8Wr547rpFfV3-IkP1BJwVwuxyidUvULYI5AnYl0lgRXVXnf_0yys96ONQAVG6G4pOx6HQ83bD-4w==")
-    response = getBucketUserOwnRepos("octaltree", "dummy")
+    response = getBucketUserOwnRepos("octaltree", "alh2BF8Wr547rpFfV3-IkP1BJwVwuxyidUvULYI5AnYl0lgRXVXnf_0yys96ONQAVG6G4pOx6HQ83bD-4w==")
+    #response = getBucketUserOwnRepos("octaltree", "dummy")
     print(response.read())
     print(response.getheaders())
     print(response.status, response.reason)
     return undefined
-
-# :: Str -> Dict -> urllib.request.HTTPResponse
-def httpGet(url, headers={}, data=None):
-    req = urllib.request.Request(url, data=data, headers=headers, method='GET')
-    req.add_header('User-Agent', USERAGENT)
-    try:
-        return urllib.request.urlopen(req)
-    except urllib.error.HTTPError as e:
-        exctype, excval, exctraceback = sys.exc_info()
-        traceback.print_tb(exctraceback)
-        print(e.status, e.reason, file=sys.stderr)
-        print(e.getheaders(), file=sys.stderr)
-        print(e.read(), file=sys.stderr)
-        print("data: ", req.data, file=sys.stderr)
-        exit(1)
 
 # :: urllib.request.Request -> IO urllib.request.HTTPResponse
 def http(request):
@@ -59,24 +44,23 @@ def http(request):
         print("headers: ", request.header_items(), file=sys.stderr)
         exit(1)
 
-
-# :: Str -> Str -> urllib.request.HTTPResponse
+# :: Str -> Str -> IO urllib.request.HTTPResponse
 def getBucketUserOwnRepos(user, token):
     url = "https://api.bitbucket.org/2.0/repositories/%s" % urllib.parse.quote(user)
     headers = { "Authorization": "Bearer %s" % token}
     return http(urllib.request.Request(url, headers=headers))
 
-# :: Str -> Str -> urllib.request.HTTPResponse
+# :: Str -> Str -> IO urllib.request.HTTPResponse
 def getHubUserOwnRepos(user, token):
     url = "https://api.github.com/user/repos"
     headers = { "Authorization": "token %s" % token}
-    return httpGet(url, headers)
+    return http(urllib.request.Request(url, headers=headers))
 
-# :: Str -> Str -> urllib.request.HTTPResponse
+# :: Str -> Str -> IO urllib.request.HTTPResponse
 def getLabUserOwnRepos(user, token):
     url = "https://gitlab.com/api/v3/projects"
     headers = { "PRIVATE-TOKEN": "%s" % token}
-    return httpGet(url, headers)
+    return http(urllib.request.Request(url, headers=headers))
 
 
 
