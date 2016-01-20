@@ -3,7 +3,7 @@
 from enum import Enum
 import argparse
 import urllib.parse
-import urllib.requset
+import urllib.request
 import urllib.error
 import json
 #import re
@@ -13,6 +13,12 @@ USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubで怒られる
 
 # main :: IO Int
 def main():
+    rootp = argparse.ArgumentParser(description='manage git remote host')
+    subp = rootp.add_subparsers(description='')
+    repop = subp.add_parser('repo', help='manipulate remote repo')
+    addp = subp.add_parser('add', help='add hosting service provider & user')
+    args = rootp.parse_args()
+    print(args)
     return undefined
 
 # undefined :: a
