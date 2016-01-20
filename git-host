@@ -22,8 +22,8 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
     #print(args)
-    response = getBucketUserOwnRepos("octaltree", "alh2BF8Wr547rpFfV3-IkP1BJwVwuxyidUvULYI5AnYl0lgRXVXnf_0yys96ONQAVG6G4pOx6HQ83bD-4w==")
-    #response = getBucketUserOwnRepos("octaltree", "dummy")
+    response = getOwnBucketRepos("signagemapapp", "mSUvKh02fgOBgdbQauSsTbirtX3ANBqg4fTUmgig6EyG6o1opWeEay0-zkRoSlLrG6CGBFyx35RxT_bV7g==")
+    #response = getOwnBucketRepos("octaltree", "dummy")
     print(response.read())
     print(response.getheaders())
     print(response.status, response.reason)
@@ -45,30 +45,30 @@ def http(request):
         exit(1)
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
-def getBucketUserOwnRepos(user, token):
+def getOwnBucketRepos(user, token):
     url = "https://api.bitbucket.org/2.0/repositories/%s" % urllib.parse.quote(user)
     headers = { "Authorization": "Bearer %s" % token}
     return http(urllib.request.Request(url, headers=headers))
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
-def getHubUserOwnRepos(user, token):
+def getOwnHubRepos(user, token):
     url = "https://api.github.com/user/repos"
     headers = { "Authorization": "token %s" % token}
     return http(urllib.request.Request(url, headers=headers))
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
-def getLabUserOwnRepos(user, token):
+def getOwnLabRepos(user, token):
     url = "https://gitlab.com/api/v3/projects"
     headers = { "PRIVATE-TOKEN": "%s" % token}
     return http(urllib.request.Request(url, headers=headers))
 
-def newBucketUserOwnRepo():
+def newOwnBucketRepo():
     return undefined
 
-def newHubUserOwnRepo():
+def newOwnHubRepo():
     return undefined
 
-def newLabUserOwnRepo():
+def newOwnLabRepo():
     return undefined
 
 # undefined :: a
