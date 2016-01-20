@@ -18,6 +18,15 @@ undefined = None
 # USERAGENT :: Str
 USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubに怒られる
 
+class OAuthConsumer:
+    # :: OAuthConsumer -> Str -> Str ->  OAuthConsumer
+    def __init__(self, consumerkey, consumersecret):
+        self.key = consumerkey
+        self.secret = consumersecret
+    __str__ = lambda self: '{{"key": "{0}", "secret": "{1}"}} :: OAuthConsumer'.format(self.key, self.secret)
+    key = None# :: Str
+    secret = None# :: Str
+
 # main :: IO Int
 def main():
     rootp = argparse.ArgumentParser(description='manage git remote host')
@@ -27,9 +36,10 @@ def main():
     args = rootp.parse_args()
     #print(args)
 
-    response = getOwnBucketRepos("octaltree", "L77RXViFwqKQnQLJNNSoPxFVA4QGdsHhlI4FWprfQFJFYOSyq-3YjK1HW1NBCUq88Ip2Bn0Ygaz3I_90Ig==")
-    repos = json.loads(body(response))['values'] # :: Dict
-    [print(urlFullNameBucketRepo(repo)) for repo in repos]
+    #response = getOwnBucketRepos("octaltree", "L77RXViFwqKQnQLJNNSoPxFVA4QGdsHhlI4FWprfQFJFYOSyq-3YjK1HW1NBCUq88Ip2Bn0Ygaz3I_90Ig==")
+    #repos = json.loads(body(response))['values'] # :: Dict
+    #[print(urlFullNameBucketRepo(repo)) for repo in repos]
+    print(OAuthConsumer('a', 'b'))
     return undefined
 
 # :: Dict -> Str
