@@ -9,7 +9,7 @@ import urllib.parse
 import urllib.request
 import urllib.error
 import json
-#import re
+import re
 #import logging
 
 USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubで怒られる
@@ -22,11 +22,11 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
     #print(args)
-    response = getOwnBucketRepos("signagemapapp", "mSUvKh02fgOBgdbQauSsTbirtX3ANBqg4fTUmgig6EyG6o1opWeEay0-zkRoSlLrG6CGBFyx35RxT_bV7g==")
+    #response = getOwnBucketRepos("signagemapapp", "mSUvKh02fgOBgdbQauSsTbirtX3ANBqg4fTUmgig6EyG6o1opWeEay0-zkRoSlLrG6CGBFyx35RxT_bV7g==")
     #response = getOwnBucketRepos("octaltree", "dummy")
-    print(response.read())
-    print(response.getheaders())
-    print(response.status, response.reason)
+    #print(response.read())
+    #print(response.getheaders())
+    #print(response.status, response.reason)
     return undefined
 
 # :: urllib.request.Request -> IO urllib.request.HTTPResponse
@@ -61,6 +61,24 @@ def getOwnLabRepos(user, token):
     url = "https://gitlab.com/api/v3/projects"
     headers = { "PRIVATE-TOKEN": "%s" % token}
     return http(urllib.request.Request(url, headers=headers))
+
+# :: urllib.request.HTTPResponse -> Str
+def httpBody(response):
+    contenttype = response.getheader('Content-Type', default='charset=utf-8')
+    charset = charsetFromContentType(contenttype)
+    if charset is None :
+        charset = 'utf-8'
+    return response.read().decode(charset)
+
+# :: Str -> Str
+def charsetFromContentType(str):
+    lines = str.split(';')
+    charsets = list(filter(lambda s: 'charset' in s, lines))
+    if len(charsets) == 0 :
+        return None
+    charset = charsets.pop().replace(' ', '')
+    mat = re.match('^charset=(.*)[;]*$', charset)
+    return mat.group(1) if mat else None
 
 def newOwnBucketRepo():
     return undefined
