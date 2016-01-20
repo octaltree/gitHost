@@ -62,7 +62,14 @@ def getLabUserOwnRepos(user, token):
     headers = { "PRIVATE-TOKEN": "%s" % token}
     return http(urllib.request.Request(url, headers=headers))
 
+def newBucketUserOwnRepo():
+    return undefined
 
+def newHubUserOwnRepo():
+    return undefined
+
+def newLabUserOwnRepo():
+    return undefined
 
 # undefined :: a
 undefined = None
