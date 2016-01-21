@@ -38,6 +38,8 @@ def main():
 
     consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
+    consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
+    print(urlHubOAuthCode(consumerhub))
     return undefined
 
 # :: OAuthConsumer -> Str
@@ -45,6 +47,15 @@ urlBucketOAuthCode = lambda c: "https://bitbucket.org/site/oauth2/authorize?clie
 
 # :: OAuthConsumer -> Str
 urlLabOAuthCode = lambda c: "https://gitlab.com/oauth/authorize?client_id={0}&response_type=code&redirect_uri={1}".format(c.key, urllib.parse.quote_plus(URLOAUTHCALLBACK))
+
+# :: OAuthConsumer -> Str
+urlHubOAuthCode = lambda c: urllib.parse.urlunparse(("https", "github.com", "/login/oauth/authorize", "",
+        urllib.parse.urlencode([
+            ("client_id", c.key),
+            ("redirect_uri", URLOAUTHCALLBACK),
+            ("scope", "public_repo,repo,user") # TODO userいらない?
+            ]), ""))
+
 
 # :: Dict -> Str
 urlFriendlyFullNameBucketRepo = lambda repo: "{0}/{1}".format(repo['owner']['username'], repo['name'])
