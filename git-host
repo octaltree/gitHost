@@ -17,6 +17,7 @@ undefined = None
 
 # USERAGENT :: Str
 USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubに怒られる
+URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
 
 class OAuthConsumer:
     # :: OAuthConsumer -> Str -> Str ->  OAuthConsumer
@@ -39,10 +40,18 @@ def main():
     #response = getOwnBucketRepos("octaltree", "L77RXViFwqKQnQLJNNSoPxFVA4QGdsHhlI4FWprfQFJFYOSyq-3YjK1HW1NBCUq88Ip2Bn0Ygaz3I_90Ig==")
     #repos = json.loads(body(response))['values'] # :: Dict
     #[print(urlFullNameBucketRepo(repo)) for repo in repos]
-    print(OAuthConsumer('a', 'b'))
+    #print(OAuthConsumer('a', 'b'))
     consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
+    print(urlLabOAuthCode(consumerlab))
     return undefined
+
+# :: OAuthConsumer -> Str
+urlBucketOAuthCode = lambda c: undefined
+
+# :: OAuthConsumer -> Str
+def urlLabOAuthCode(consumer):
+    return "https://gitlab.com/oauth/authorize?client_id={0}&redirect_uri={1}&response_type=code".format(consumer.key, urllib.parse.quote_plus(URLOAUTHCALLBACK))
 
 # :: Dict -> Str
 urlFullNameBucketRepo = lambda repo: "{0}/{1}".format(repo['owner']['username'], repo['name'])
