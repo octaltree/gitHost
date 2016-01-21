@@ -18,15 +18,32 @@ undefined = None
 # USERAGENT :: Str
 USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubに怒られる
 URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
-
 class OAuthConsumer:
-    # :: OAuthConsumer -> Str -> Str ->  OAuthConsumer
+    # :: OAuthConsumer -> Str -> Str -> OAuthConsumer
     def __init__(self, consumerkey, consumersecret):
         self.key = consumerkey
         self.secret = consumersecret
+        return self
     __str__ = lambda self: '{{"key": "{0}", "secret": "{1}"}} :: OAuthConsumer'.format(self.key, self.secret)
     key = None# :: Str
     secret = None# :: Str
+
+class OAuthToken:
+    # :: OAuthToken ->  OAuthToken
+    def __init__(self, accesstoken, tokentype=None, scopes=None, refreshtoken=None, validterm=None, createdat=None):
+        accesstoken = accesstoken
+        tokentype = tokentype
+        scopes = scopes
+        refreshtoken = refreshtoken
+        validterm = validterm
+        createdat = createdat
+        return self
+    accesstoken = None # :: Str
+    refreshtoken = None # :: Str
+    scopes = None # :: Str
+    tokentype = None # :: Str
+    validterm = None # :: datetime.timedelta
+    createdat = None # :: datetime.datetime
 
 # main :: IO Int
 def main():
@@ -40,6 +57,18 @@ def main():
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
     consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
     print(urlHubOAuthCode(consumerhub))
+    return undefined
+
+# :: OAuthConsumer -> Str -> OAuthToken
+def getHubOAuthToken(consumer, code):
+    return undefined
+
+# :: OAuthConsumer -> Str -> OAuthToken
+def getLabOAuthToken(consumer, code):
+    return undefined
+
+# :: OAuthConsumer -> Str -> OAuthToken
+def getBucketOAuthToken(consumer, code):
     return undefined
 
 # :: OAuthConsumer -> Str
