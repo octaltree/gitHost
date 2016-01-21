@@ -40,6 +40,8 @@ def main():
     #repos = json.loads(body(response))['values'] # :: Dict
     #[print(urlFullNameBucketRepo(repo)) for repo in repos]
     print(OAuthConsumer('a', 'b'))
+    consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
+    consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
     return undefined
 
 # :: Dict -> Str
