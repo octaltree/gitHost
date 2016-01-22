@@ -66,10 +66,12 @@ def main():
     consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
     consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
-    #print(urlBucketOAuthCode(consumerbucket))
-    #print(getBucketOAuthToken(consumerbucket, 'EQG2fW8quYbQNSSyLx'))
-    refreshbucket = "2g7VCmzNcR8p3XDWa6"
-    print(refreshBucketOAuthToken(consumerbucket, refreshbucket))
+    #print(urlLabOAuthCode(consumerlab))
+    #print(getLabOAuthToken(consumerlab, 'e0d9a3c6f72c7800a3a633aea55caea3dde91813c4eb466f82f70c1879cb537b'))
+    #refreshbucket = "2g7VCmzNcR8p3XDWa6"
+    refreshlab = "3cbccf080bd27ff6dee7d3072854fe492422e17c4810c8de5f4cb7f5d454b189"
+    #print(refreshBucketOAuthToken(consumerbucket, refreshbucket))
+    print(refreshLabOAuthToken(consumerlab, refreshlab))
     return undefined
 
 # :: OAuthConsumer -> Str -> OAuthToken
@@ -117,6 +119,25 @@ def getBucketOAuthToken(consumer, code):
         ("client_secret", consumer.secret),
         ("code", code),
         ("grant_type", "authorization_code")
+        ]).encode('utf-8')
+    headers = {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    req = urllib.request.Request(url, data, headers)
+    token = json.loads(body(http(req))) # :: Dict
+    try:
+        return OAuthToken(token)
+    except KeyError:
+        exit(token)
+
+# :: OAuthConsumer -> Str -> OAuthToken
+def refreshLabOAuthToken(consumer, refreshtoken):
+    url = "https://gitlab.com/oauth/token"
+    data = urllib.parse.urlencode([
+        ("client_id", consumer.key),
+        ("client_secret", consumer.secret),
+        ("refresh_token", refreshtoken),
+        ("grant_type", "refresh_token"),
+        ("redirect_uri", URLOAUTHCALLBACK)
         ]).encode('utf-8')
     headers = {
             "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
