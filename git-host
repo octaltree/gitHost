@@ -17,8 +17,10 @@ import datetime
 undefined = None
 
 # USERAGENT :: Str
-USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubに怒られる
+USERAGENT = "gitHost/0.0.1.0" # 何かしら指定しないとhubに怒られる
 URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
+TIMEFORMAT = "%Y,%j,%H,%M,%S,%f"
+
 class OAuthConsumer:
     # :: OAuthConsumer -> Str -> Str -> OAuthConsumer -> a
     def __init__(self, consumerkey, consumersecret):
