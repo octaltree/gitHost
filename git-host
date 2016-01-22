@@ -68,6 +68,8 @@ def main():
     consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
     #print(urlBucketOAuthCode(consumerbucket))
     #print(getBucketOAuthToken(consumerbucket, 'EQG2fW8quYbQNSSyLx'))
+    refreshbucket = "2g7VCmzNcR8p3XDWa6"
+    print(refreshBucketOAuthToken(consumerbucket, refreshbucket))
     return undefined
 
 # :: OAuthConsumer -> Str -> OAuthToken
@@ -115,6 +117,24 @@ def getBucketOAuthToken(consumer, code):
         ("client_secret", consumer.secret),
         ("code", code),
         ("grant_type", "authorization_code")
+        ]).encode('utf-8')
+    headers = {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    req = urllib.request.Request(url, data, headers)
+    token = json.loads(body(http(req))) # :: Dict
+    try:
+        return OAuthToken(token)
+    except KeyError:
+        exit(token)
+
+# :: OAuthConsumer -> Str -> OAuthToken
+def refreshBucketOAuthToken(consumer, refreshtoken):
+    url = "https://bitbucket.org/site/oauth2/access_token"
+    data = urllib.parse.urlencode([
+        ("client_id", consumer.key),
+        ("client_secret", consumer.secret),
+        ("refresh_token", refreshtoken),
+        ("grant_type", "refresh_token")
         ]).encode('utf-8')
     headers = {
             "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
