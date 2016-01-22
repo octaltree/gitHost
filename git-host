@@ -31,22 +31,29 @@ class OAuthConsumer:
     secret = None# :: Str
 
 class OAuthToken:
-    # :: OAuthToken -> a
-    def __init__(self, accesstoken, tokentype=None, scope=None, refreshtoken=None, validterm=None, createat=None):
-        self.accesstoken = accesstoken
-        self.tokentype = tokentype
-        self.scope = scope
-        self.refreshtoken = refreshtoken
-        self.validterm = validterm
-        self.createat = createat
+    # :: OAuthToken -> Dict -> a
+    def __init__(self, token):
+        try:
+            self.access_token = token['access_token']
+        except KeyError:
+            exit("fail at OAuthToken(" + str(token) + ")")
+
+        self.create_at = datetime.datetime.now()
+        self.token_type = token.get("token_type")
+        self.scope = token.get("scope", self.scope)
+        self.scope = token.get("scopes", self.scope)
+        self.refresh_token = token.get("refresh_token")
+        self.expires_in = token.get("expires_in")
         return None
+
     __str__ = lambda self: str(vars(self)) + " :: OAuthToken"
-    accesstoken = None # :: Str
-    refreshtoken = None # :: Str
+
+    access_token = None # :: Str
+    refresh_token = None # :: Str
     scope = None # :: Str
-    tokentype = None # :: Str
-    validterm = None # :: datetime.timedelta
-    createdat = None # :: datetime.datetime
+    token_type = None # :: Str
+    expires_in = None # :: datetime.timedelta
+    created_at = None # :: datetime.datetime
 
 # main :: IO Int
 def main():
@@ -59,8 +66,9 @@ def main():
     consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
     consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
+    print(OAuthToken({"access_token": "hoge"}))
     #print(urlLabOAuthCode(consumerlab))
-    print(getLabOAuthToken(consumerlab, '3ed94b208284a0173af21e96f28591683e5dd00a37f3f9226b458a7639f853c6'))
+    #print(getLabOAuthToken(consumerlab, '3ed94b208284a0173af21e96f28591683e5dd00a37f3f9226b458a7639f853c6'))
     #print(refreshLabOAuthToken(consumerlab, ''))
     return undefined
 
@@ -76,18 +84,15 @@ def getHubOAuthToken(consumer, code):
             "Accept": "application/json"}
     req = urllib.request.Request("https://github.com/login/oauth/access_token",
             data, headers)
-    createat = datetime.datetime.now()
     token = json.loads(body(http(req))) # :: Dict
     try:
-        return OAuthToken(token['access_token'],
-                tokentype = token['token_type'],
-                scope = token['scope'],
-                createat = createat)
+        return OAuthToken(token)
     except KeyError:
         exit(token)
 
 # :: OAuthConsumer -> Str -> OAuthToken
 def getLabOAuthToken(consumer, code):
+    url = "https://gitlab.com/oauth/token"
     data = urllib.parse.urlencode([
         ("client_id", consumer.key),
         ("client_secret", consumer.secret),
@@ -97,44 +102,12 @@ def getLabOAuthToken(consumer, code):
         ]).encode('utf-8')
     headers = {
             "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-    req = urllib.request.Request("https://gitlab.com/oauth/token",
-            data, headers)
-    createat = datetime.datetime.now()
+    req = urllib.request.Request(url, data, headers)
     token = json.loads(body(http(req))) # :: Dict
     try:
-        return OAuthToken(token['access_token'],
-                tokentype = token['token_type'],
-                #scope = token['scope'],
-                refreshtoken = token['refresh_token'],
-                validterm = token['expires_in'],
-                createat = createat)
+        return OAuthToken(token)
     except KeyError:
         exit(token)
-
-def refreshLabOAuthToken(consumer, refreshtoken):
-    data = urllib.parse.urlencode([
-        ("client_id", consumer.key),
-        ("client_secret", consumer.secret),
-        ("code", refreshtoken),
-        ("grant_type", "refresh_token"),
-        ("redirect_uri", URLOAUTHCALLBACK)
-        ]).encode('utf-8')
-    headers = {
-            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-    req = urllib.request.Request("https://gitlab.com/oauth/token",
-            data, headers)
-    createat = datetime.datetime.now()
-    token = json.loads(body(http(req))) # :: Dict
-    try:
-        return OAuthToken(token['access_token'],
-                tokentype = token['token_type'],
-                #scope = token['scope'],
-                refreshtoken = token['refresh_token'],
-                validterm = token['expires_in'],
-                createat = createat)
-    except KeyError:
-        exit(token)
-
 
 # :: OAuthConsumer -> Str -> OAuthToken
 def getBucketOAuthToken(consumer, code):
