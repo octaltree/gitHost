@@ -59,8 +59,8 @@ def main():
     consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
     consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
-    #print(urlHubOAuthCode(consumerhub))
-    print(getHubOAuthToken(consumerhub, 'f2223ea18199cd1c6673'))
+    #print(urlLabOAuthCode(consumerlab))
+    print(getLabOAuthToken(consumerlab, 'dc8fad555f835c0f4f95f3c48fe6a0a32ce586edcb5d91b8e034ebc7dc54e590'))
     return undefined
 
 # :: OAuthConsumer -> Str -> OAuthToken
@@ -87,7 +87,28 @@ def getHubOAuthToken(consumer, code):
 
 # :: OAuthConsumer -> Str -> OAuthToken
 def getLabOAuthToken(consumer, code):
-    return undefined
+    data = urllib.parse.urlencode([
+        ("client_id", consumer.key),
+        ("client_secret", consumer.secret),
+        ("code", code),
+        ("grant_type", "authorization_code"),
+        ("redirect_uri", URLOAUTHCALLBACK)
+        ]).encode('utf-8')
+    headers = {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    req = urllib.request.Request("https://gitlab.com/oauth/token",
+            data, headers)
+    createat = datetime.datetime.now()
+    token = json.loads(body(http(req))) # :: Dict
+    try:
+        return OAuthToken(token['access_token'],
+                tokentype = token['token_type'],
+                #scope = token['scope'],
+                refreshtoken = token['refresh_token'],
+                validterm = token['expires_in'],
+                createat = createat)
+    except KeyError:
+        exit(token)
 
 # :: OAuthConsumer -> Str -> OAuthToken
 def getBucketOAuthToken(consumer, code):
