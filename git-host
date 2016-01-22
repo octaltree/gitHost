@@ -45,7 +45,7 @@ class OAuthToken:
         self.scope = token.get("scope", self.scope)
         self.scope = token.get("scopes", self.scope)
         self.refresh_token = token.get("refresh_token")
-        self.expires_in = token.get("expires_in")
+        self.expires_in = token.get("expires_in") # TODO :: datetime.timedelta
         return None
 
     __str__ = lambda self: str(vars(self)) + " :: OAuthToken"
@@ -73,7 +73,12 @@ def main():
     #refreshbucket = "2g7VCmzNcR8p3XDWa6"
     refreshlab = "3cbccf080bd27ff6dee7d3072854fe492422e17c4810c8de5f4cb7f5d454b189"
     #print(refreshBucketOAuthToken(consumerbucket, refreshbucket))
-    print(refreshLabOAuthToken(consumerlab, refreshlab))
+    #print(refreshLabOAuthToken(consumerlab, refreshlab))
+    return undefined
+
+# :: OAuthToken -> json
+def jsonOAuthToken(token):
+    #return json.dumps(dic)
     return undefined
 
 # :: OAuthConsumer -> Str -> OAuthToken
