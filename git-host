@@ -66,10 +66,8 @@ def main():
     consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
     consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
     consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
-    print(OAuthToken({"access_token": "hoge"}))
-    #print(urlLabOAuthCode(consumerlab))
-    #print(getLabOAuthToken(consumerlab, '3ed94b208284a0173af21e96f28591683e5dd00a37f3f9226b458a7639f853c6'))
-    #print(refreshLabOAuthToken(consumerlab, ''))
+    #print(urlBucketOAuthCode(consumerbucket))
+    #print(getBucketOAuthToken(consumerbucket, 'EQG2fW8quYbQNSSyLx'))
     return undefined
 
 # :: OAuthConsumer -> Str -> OAuthToken
@@ -111,7 +109,21 @@ def getLabOAuthToken(consumer, code):
 
 # :: OAuthConsumer -> Str -> OAuthToken
 def getBucketOAuthToken(consumer, code):
-    return undefined
+    url = "https://bitbucket.org/site/oauth2/access_token"
+    data = urllib.parse.urlencode([
+        ("client_id", consumer.key),
+        ("client_secret", consumer.secret),
+        ("code", code),
+        ("grant_type", "authorization_code")
+        ]).encode('utf-8')
+    headers = {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    req = urllib.request.Request(url, data, headers)
+    token = json.loads(body(http(req))) # :: Dict
+    try:
+        return OAuthToken(token)
+    except KeyError:
+        exit(token)
 
 # :: OAuthConsumer -> Str
 urlBucketOAuthCode = lambda c: "https://bitbucket.org/site/oauth2/authorize?client_id={0}&response_type=code".format(c.key)
