@@ -8,6 +8,7 @@
 3. 引数パース
 1. github, bitbucket, gitlab/gitlab.comのリポジトリ一覧を出力
 5. 鍵類読み込み
+6. 読み込み時の安全性
 
 ## config
 ~/.githost/config

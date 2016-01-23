@@ -21,7 +21,7 @@ URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
 TIMEFORMAT = "%Y,%j,%H,%M,%S,%f"
 
 class Github:
-    # :: Github -> OAuthConsumer -> dict -> a
+    # :: Github -> OAuthConsumer -> Dict -> Str -> a
     def __init__(self, consumer, dictoken, defaultuser = None):
         self.consumer = consumer
         self.tokens = dictoken
@@ -40,7 +40,7 @@ class Github:
     tokens = None # :: Dict # username to OAuthToken
 
 class Bitbucket:
-    # :: Bitbucket -> OAuthConsumer -> dict -> a
+    # :: Bitbucket -> OAuthConsumer -> Dict -> Str -> a
     def __init__(self, consumer, dictoken):
         self.consumer = consumer
         self.tokens = dictoken
@@ -59,7 +59,7 @@ class Bitbucket:
     tokens = None # :: Dict # username to OAuthToken
 
 class Gitlab:
-    # :: Gitlab -> OAuthConsumer -> dict -> a
+    # :: Gitlab -> OAuthConsumer -> Dict -> Str -> a
     def __init__(self, consumer, dictoken):
         self.defaultuser = defaultuser
         self.consumer = consumer
@@ -142,6 +142,39 @@ def main():
     t = OAuthToken.fromDict(dic)
     print(t)
     return undefined
+
+# :: Github -> Bitbucket -> Gitlab -> Str
+def outputConfig(hub=None, bucket=None, lab=None):
+    dic = {}
+    if hub is not None:
+        hub.update({"github": json.loads(hub.json())})
+    if bucket is not None:
+        bucket.update({"bitbucket": json.loads(bucket.json())})
+    if lab is not None:
+        lab.update({"gitlab": json.loads(lab.json())})
+    return json.dumps(dic, ensure_ascii=False, indent=4, separators=(',', ':'))
+
+# :: Str -> Dict
+def inputConfig(rawjson):
+    dic = json.loads(rawjson)
+    res = {}
+    # :: Dict -> (OAuthConsumer, Dict, Str)
+    def read(dic):
+        c = OAuthConsumer.fromDict(dic['consumer'])
+        t = {}
+        [t.update({t[0]: OAuthToken.fromDict(t[1])}) for t in dic['tokens'].items()]
+        d = dic.get('defaultuser')
+        return (c, t, d)
+    if dic.get("github") is not None:
+        t = read(dic)
+        res.update({"github": Github(t[0], t[1], t[2])})
+    if dic.get("bitbucket") is not None:
+        t = read(dic)
+        res.update({"bitbucket": Github(t[0], t[1], t[2])})
+    if dic.get("gitlab") is not None:
+        t = read(dic)
+        res.update({"gitlab": Github(t[0], t[1], t[2])})
+    return res
 
 if __name__ == "__main__" :
   exit(main())
