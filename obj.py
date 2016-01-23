@@ -63,6 +63,17 @@ class Github:
             return t
         except KeyError:
             exit(token)
+    # :: Github -> Str
+    def urlOAuthCode(self):
+        urllib.parse.urlunparse(("https", "github.com", "/login/oauth/authorize", "",
+            urllib.parse.urlencode([
+                ("client_id", self.consumer.key),
+                ("redirect_uri", URLOAUTHCALLBACK),
+                ("scope", "public_repo,repo,user") # TODO userいらない?
+                ]), ""))
+    # :: Dict -> Str
+    def urlFriendlyRepoFullName(repo):
+        return repo['path_with_namespace']
 
 class Bitbucket:
     # :: Bitbucket -> OAuthConsumer -> Dict -> Str -> a
