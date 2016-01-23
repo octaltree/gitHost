@@ -124,7 +124,8 @@ class OAuthToken:
         if dic.get('expires_in') is not None:
             res.expires_in = datetime.timedelta(seconds=dic['expires_in'])
         if dic.get('create_at') is not None:
-            res.create_at = datetime.datetime.strptime(dic['create_at'], TIMEFORMAT)
+            res.create_at = datetime.datetime.strptime(
+                    dic['create_at'], TIMEFORMAT)
         return res
 
     access_token = None # :: Str
@@ -192,7 +193,8 @@ def inputConfig(rawjson):
     def read(dic):
         c = OAuthConsumer.fromDict(dic['consumer'])
         t = {}
-        [t.update({t[0]: OAuthToken.fromDict(t[1])}) for t in dic['tokens'].items()]
+        [t.update({t[0]: OAuthToken.fromDict(t[1])})
+                for t in dic['tokens'].items()]
         d = dic.get('defaultuser')
         return (c, t, d)
     if dic.get("github") is not None:
