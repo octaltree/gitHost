@@ -176,13 +176,6 @@ def main():
     hub = dic.get('github') # :: Github
     lab = dic.get('gitlab') # :: Gitlab
     bucket = dic.get('bitbucket') # ::  Bitbucket
-    #hoge = OAuthToken({'access_token': 'asdf', "expires_in": 3600})
-    #rawjson = hoge.json()
-    #print(rawjson)
-    #dic = json.loads(rawjson)
-    #print(dic)
-    #t = OAuthToken.fromDict(dic)
-    #print(t)
     return undefined
 
 # :: IO ()
