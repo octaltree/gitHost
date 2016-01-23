@@ -18,6 +18,7 @@
       "key": "*****",
       "secret": "*****"
     },
+    "defaultuser": "hoge",
     "tokens": {
       "username": {
         "access_token": "****"
@@ -38,6 +39,7 @@
       "key": "*****",
       "secret": "*****"
     },
+    "defaultuser": "hoge",
     "tokens": {
     }
   },
@@ -46,6 +48,7 @@
       "key": "*****",
       "secret": "*****"
     },
+    "defaultuser": "hoge",
     "tokens": {
     }
   }
