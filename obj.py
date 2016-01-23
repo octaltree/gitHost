@@ -3,6 +3,8 @@
 
 from enum import Enum
 import sys
+import os
+import os.path
 #import traceback
 import argparse
 import urllib.parse
@@ -134,14 +136,34 @@ class OAuthToken:
 
 # main :: IO Int
 def main():
-    hoge = OAuthToken({'access_token': 'asdf', "expires_in": 3600})
-    rawjson = hoge.json()
-    print(rawjson)
-    dic = json.loads(rawjson)
-    print(dic)
-    t = OAuthToken.fromDict(dic)
-    print(t)
+    #hoge = OAuthToken({'access_token': 'asdf', "expires_in": 3600})
+    #rawjson = hoge.json()
+    #print(rawjson)
+    #dic = json.loads(rawjson)
+    #print(dic)
+    #t = OAuthToken.fromDict(dic)
+    #print(t)
+    touchConfig()
     return undefined
+
+# :: IO ()
+def touchConfig():
+    if not os.path.exists(os.path.expanduser("~/.githost/")):
+        os.makedirs(os.path.expanduser(("~/.githost/")))
+    f = open(os.path.expanduser("~/.githost/config"), "a")
+    f.write('')
+    return ()
+
+# :: Str -> IO ()
+def writeConfig(rawjson):
+    f = open(os.path.expanduser("~/.githost/config"), "w")
+    f.write(rawjson)
+    return ()
+
+# :: IO Str
+def readConfig():
+    f = open(os.path.expanduser("~/.githost/config"), "r")
+    return f.read()
 
 # :: Github -> Bitbucket -> Gitlab -> Str
 def outputConfig(hub=None, bucket=None, lab=None):
