@@ -23,9 +23,9 @@ TIMEFORMAT = "%Y,%j,%H,%M,%S,%f"
 DEFAULTUSER = None
 
 class Host(Enum):
-    hub = 1
-    bucket = 2
-    lab = 3
+    hub = "github"
+    bucket = "bitbucket"
+    lab = "gitlab"
 
 class OAuthConsumer:
     # :: OAuthConsumer -> Host -> Str -> Str -> OAuthConsumer -> a

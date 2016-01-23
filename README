@@ -8,3 +8,46 @@
 3. 引数パース
 1. github, bitbucket, gitlab/gitlab.comのリポジトリ一覧を出力
 5. 鍵類読み込み
+
+## config
+~/.githost/config
+```
+{
+  "bitbucket": {
+    "consumer": {
+      "key": "*****",
+      "secret": "*****"
+    },
+    "tokens": {
+      "username": {
+        "access_token": "****"
+        "refresh_token": "****"
+        "token_type": "****"
+        "expires_in": "****"
+      },
+      "hoge": {
+        "access_token": "****"
+      },
+      "foo": {
+        "access_token": "****"
+      }
+    }
+  },
+  "github": {
+    "consumer": {
+      "key": "*****",
+      "secret": "*****"
+    },
+    "tokens": {
+    }
+  },
+  "gitlab": {
+    "consumer": {
+      "key": "*****",
+      "secret": "*****"
+    },
+    "tokens": {
+    }
+  }
+}
+```
