@@ -44,6 +44,7 @@ class OAuthConsumer:
     secret = None # :: Str
 
 class OAuthToken:
+    # :: OAuthToken -> Dict -> a
     def __init__(self, token):
         try:
             self.access_token = token['access_token']
