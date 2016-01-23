@@ -21,13 +21,61 @@ URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
 TIMEFORMAT = "%Y,%j,%H,%M,%S,%f"
 
 class Github:
-    undefined
+    # :: Github -> OAuthConsumer -> dict -> a
+    def __init__(self, consumer, dictoken, defaultuser = None):
+        self.consumer = consumer
+        self.tokens = dictoken
+        self.defaultuser = defaultuser
+        return None
+    # :: Github -> Str
+    def json(self):
+        diccon = json.loads(self.consumer.json())
+        dictoken = json.loads(self.toknes.json())
+        dic = {
+                "consumer": diccon,
+                "tokens": dictoken}
+        return json.dumps(dic, ensure_ascii=False)
+    defaultuser = None # :: Str
+    consumer = None # :: OAuthConsumer
+    tokens = None # :: Dict # username to OAuthToken
 
 class Bitbucket:
-    undefined
+    # :: Bitbucket -> OAuthConsumer -> dict -> a
+    def __init__(self, consumer, dictoken):
+        self.consumer = consumer
+        self.tokens = dictoken
+        self.defaultuser = defaultuser
+        return None
+    # :: Bitbucket -> Str
+    def json(self):
+        diccon = json.loads(self.consumer.json())
+        dictoken = json.loads(self.toknes.json())
+        dic = {
+                "consumer": diccon,
+                "tokens": dictoken}
+        return json.dumps(dic, ensure_ascii=False)
+    defaultuser = None # :: Str
+    consumer = None # :: OAuthConsumer
+    tokens = None # :: Dict # username to OAuthToken
 
 class Gitlab:
-    undefined
+    # :: Gitlab -> OAuthConsumer -> dict -> a
+    def __init__(self, consumer, dictoken):
+        self.defaultuser = defaultuser
+        self.consumer = consumer
+        self.tokens = dictoken
+        return None
+    # :: Gitlab -> Str
+    def json(self):
+        diccon = json.loads(self.consumer.json())
+        dictoken = json.loads(self.toknes.json())
+        dic = {
+                "consumer": diccon,
+                "tokens": dictoken}
+        return json.dumps(dic, ensure_ascii=False)
+    defaultuser = None # :: Str
+    consumer = None # :: OAuthConsumer
+    tokens = None # :: Dict # username to OAuthToken
 
 class OAuthConsumer:
     # :: OAuthConsumer -> Str -> Str -> a
@@ -55,14 +103,28 @@ class OAuthToken:
         self.scope = token.get("scope", self.scope)
         self.scope = token.get("scopes", self.scope)
         self.refresh_token = token.get("refresh_token")
-        self.expires_in = token.get("expires_in") # TODO :: datetime.timedelta
+        if token.get("expires_in") is not None:
+            self.expires_in = datetime.timedelta(seconds=token['expires_in'])
         return None
 
     __str__ = lambda self: str(vars(self)) + " :: OAuthToken"
     def json(self):
         dic = vars(self)
         dic.update({"create_at": self.create_at.strftime(TIMEFORMAT)})
-        return json.dumps(dic, ensure_ascii=False, indent=4, separators=(',', ':'))
+        dic.update({"expires_in": self.expires_in.total_seconds()})
+        return json.dumps(dic, ensure_ascii=False)
+    # :: Dict -> OAuthConsumer
+    def fromDict(dic):
+        res = OAuthToken(dic)
+        res.refresh_token = dic.get("refresh_token")
+        res.token_type = dic.get("token_type")
+        res.scope = dic.get("scope")
+        if dic.get('expires_in') is not None:
+            res.expires_in = datetime.timedelta(seconds=dic['expires_in'])
+        if dic.get('create_at') is not None:
+            res.create_at = datetime.datetime.strptime(dic['create_at'], TIMEFORMAT)
+        return res
+
     access_token = None # :: Str
     refresh_token = None # :: Str
     scope = None # :: Str
@@ -72,8 +134,13 @@ class OAuthToken:
 
 # main :: IO Int
 def main():
-    hoge = OAuthToken({'access_token': 'asdf'})
-    print(hoge.json())
+    hoge = OAuthToken({'access_token': 'asdf', "expires_in": 3600})
+    rawjson = hoge.json()
+    print(rawjson)
+    dic = json.loads(rawjson)
+    print(dic)
+    t = OAuthToken.fromDict(dic)
+    print(t)
     return undefined
 
 if __name__ == "__main__" :
