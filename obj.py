@@ -40,6 +40,29 @@ class Github:
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
+    # :: Github -> Str -> Str -> OAuthToken
+    def getOAuthToken(self, user, code):
+        if self.consumer is None:
+            exit("need consumerkey, secret to get access_token")
+        data = urllib.parse.urlencode([
+            ("client_id", consumer.key),
+            ("client_secret", consumer.secret),
+            ("code", code)
+            ]).encode('utf-8') # :: BytesUtf8
+        headers = {
+                "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+                "Accept": "application/json"}
+        req = urllib.request.Request("https://github.com/login/oauth/access_token",
+                data, headers)
+        token = json.loads(body(http(req))) # :: Dict
+        try:
+            t = OAuthToken(token)
+            if self.tokens is None:
+                self.tokens = {}
+            self.tokens.update({user, t})
+            return t
+        except KeyError:
+            exit(token)
 
 class Bitbucket:
     # :: Bitbucket -> OAuthConsumer -> Dict -> Str -> a
@@ -211,5 +234,5 @@ def inputConfig(rawjson):
 if __name__ == "__main__" :
   exit(main())
 
-# vim:fenc=utf-8 ff=unix ft=python ts=4 sw=4 sts=4 si et fdm=indent fdl=0 fdn=1:
+# vim:fenc=utf-8 ff=unix ft=python ts=4 sw=4 sts=4 si et fdm=indent fdl=0 fdn=2:
 # vim:cinw=if,elif,else,for,while,try,except,finally,def,class:
