@@ -136,6 +136,11 @@ class OAuthToken:
 
 # main :: IO Int
 def main():
+    touchConfig()
+    dic = inputConfig(readConfig())
+    hub = dic.get('github') # :: Github
+    lab = dic.get('gitlab') # :: Gitlab
+    bucket = dic.get('bitbucket') # ::  Bitbucket
     #hoge = OAuthToken({'access_token': 'asdf', "expires_in": 3600})
     #rawjson = hoge.json()
     #print(rawjson)
@@ -143,7 +148,6 @@ def main():
     #print(dic)
     #t = OAuthToken.fromDict(dic)
     #print(t)
-    touchConfig()
     return undefined
 
 # :: IO ()
@@ -178,7 +182,11 @@ def outputConfig(hub=None, bucket=None, lab=None):
 
 # :: Str -> Dict
 def inputConfig(rawjson):
-    dic = json.loads(rawjson)
+    try:
+        dic = json.loads(rawjson)
+    except:
+        print("~/.githost/config", file=sys.stderr)
+        exit("can't read config")
     res = {}
     # :: Dict -> (OAuthConsumer, Dict, Str)
     def read(dic):
