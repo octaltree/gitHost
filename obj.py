@@ -32,9 +32,12 @@ class Github:
     # :: Github -> Str
     def json(self):
         diccon = json.loads(self.consumer.json())
-        dictoken = json.loads(self.toknes.json())
+        dictoken = dict(map(
+            lambda kv: (kv[0], json.loads(kv[1].json())),
+            self.tokens.items()))
         dic = {
                 "consumer": diccon,
+                "defaultuser": self.defaultuser,
                 "tokens": dictoken}
         return json.dumps(dic, ensure_ascii=False)
     defaultuser = None # :: Str
@@ -45,8 +48,8 @@ class Github:
         if self.consumer is None:
             exit("need consumerkey, secret to get access_token")
         data = urllib.parse.urlencode([
-            ("client_id", consumer.key),
-            ("client_secret", consumer.secret),
+            ("client_id", self.consumer.key),
+            ("client_secret", self.consumer.secret),
             ("code", code)
             ]).encode('utf-8') # :: BytesUtf8
         headers = {
@@ -59,13 +62,14 @@ class Github:
             t = OAuthToken(token)
             if self.tokens is None:
                 self.tokens = {}
-            self.tokens.update({user, t})
+            print(self.tokens)
+            self.tokens.update({user: t})
             return t
         except KeyError:
             exit(token)
     # :: Github -> Str
     def urlOAuthCode(self):
-        urllib.parse.urlunparse(("https", "github.com", "/login/oauth/authorize", "",
+        return urllib.parse.urlunparse(("https", "github.com", "/login/oauth/authorize", "",
             urllib.parse.urlencode([
                 ("client_id", self.consumer.key),
                 ("redirect_uri", URLOAUTHCALLBACK),
@@ -147,7 +151,8 @@ class OAuthToken:
     def json(self):
         dic = vars(self)
         dic.update({"create_at": self.create_at.strftime(TIMEFORMAT)})
-        dic.update({"expires_in": self.expires_in.total_seconds()})
+        if self.expires_in is not None:
+            dic.update({"expires_in": self.expires_in.total_seconds()})
         return json.dumps(dic, ensure_ascii=False)
     # :: Dict -> OAuthConsumer
     def fromDict(dic):
@@ -176,7 +181,13 @@ def main():
     hub = dic.get('github') # :: Github
     lab = dic.get('gitlab') # :: Gitlab
     bucket = dic.get('bitbucket') # ::  Bitbucket
-    return undefined
+    print(hub)
+    #print(hub.urlOAuthCode())
+    #print(hub.getOAuthToken("octaltree", "97f6d1094666d527c28f"))
+    #print(hub.tokens)
+    #writeConfig(outputConfig(hub, bucket, lab))
+    return 0
+
 
 # :: IO ()
 def touchConfig():
@@ -201,11 +212,11 @@ def readConfig():
 def outputConfig(hub=None, bucket=None, lab=None):
     dic = {}
     if hub is not None:
-        hub.update({"github": json.loads(hub.json())})
+        dic.update({"github": json.loads(hub.json())})
     if bucket is not None:
-        bucket.update({"bitbucket": json.loads(bucket.json())})
+        dic.update({"bitbucket": json.loads(bucket.json())})
     if lab is not None:
-        lab.update({"gitlab": json.loads(lab.json())})
+        dic.update({"gitlab": json.loads(lab.json())})
     return json.dumps(dic, ensure_ascii=False, indent=4, separators=(',', ':'))
 
 # :: Str -> Dict
@@ -219,21 +230,59 @@ def inputConfig(rawjson):
     # :: Dict -> (OAuthConsumer, Dict, Str)
     def read(dic):
         c = OAuthConsumer.fromDict(dic['consumer'])
-        t = {}
-        [t.update({t[0]: OAuthToken.fromDict(t[1])})
+        to = {}
+        [to.update({t[0]: OAuthToken.fromDict(t[1])})
                 for t in dic['tokens'].items()]
         d = dic.get('defaultuser')
-        return (c, t, d)
+        return (c, to, d)
     if dic.get("github") is not None:
-        t = read(dic)
+        t = read(dic['github'])
         res.update({"github": Github(t[0], t[1], t[2])})
     if dic.get("bitbucket") is not None:
-        t = read(dic)
+        t = read(dic['bitbucket'])
         res.update({"bitbucket": Github(t[0], t[1], t[2])})
     if dic.get("gitlab") is not None:
-        t = read(dic)
+        t = read(dic['gitlab'])
         res.update({"gitlab": Github(t[0], t[1], t[2])})
     return res
+
+# :: urllib.request.Request -> IO urllib.request.HTTPResponse
+def http(request):
+    request.add_header("User-Agent", USERAGENT)
+    try:
+        return urllib.request.urlopen(request)
+    except urllib.error.HTTPError as e:
+        #exctype, excval, exctraceback = sys.exc_info()
+        print("*** Request", file=sys.stderr)
+        print(" ", request.get_method(), request.full_url, file=sys.stderr)
+        #print(" ", request.header_items(), file=sys.stderr)
+        [print(" ", tpl, file=sys.stderr) for tpl in request.header_items()]
+        print(" ", request.data, file=sys.stderr)
+        print("", file=sys.stderr)
+        print("*** Response", file=sys.stderr)
+        print(" ", e.status, e.reason, file=sys.stderr)
+        #print(" ", e.getheaders(), file=sys.stderr)
+        [print(" ", tpl, file=sys.stderr) for tpl in e.getheaders()]
+        print(" ", e.read(), file=sys.stderr)
+        exit(1)
+
+# :: urllib.request.HTTPResponse -> Str
+def body(response):
+    contenttype = response.getheader('Content-Type', default='charset=utf-8')
+    charset = charsetFromContentType(contenttype)
+    if charset is None :
+        charset = 'utf-8'
+    return response.read().decode(charset)
+
+# :: Str -> Str
+def charsetFromContentType(str):
+    lines = str.split(';')
+    charsets = list(filter(lambda s: 'charset' in s, lines))
+    if len(charsets) == 0 :
+        return None
+    charset = charsets.pop().replace(' ', '')
+    mat = re.match('^charset=(.*)[;]*$', charset)
+    return mat.group(1) if mat else None
 
 if __name__ == "__main__" :
   exit(main())
