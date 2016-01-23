@@ -21,14 +21,21 @@ USERAGENT = "gitHost/0.0.1.0" # 何かしら指定しないとhubに怒られる
 URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
 TIMEFORMAT = "%Y,%j,%H,%M,%S,%f"
 
+class Host(Enum):
+    hub = 1
+    bucket = 2
+    lab = 3
+
 class OAuthConsumer:
-    # :: OAuthConsumer -> Str -> Str -> OAuthConsumer -> a
-    def __init__(self, consumerkey, consumersecret):
+    # :: OAuthConsumer -> Host -> Str -> Str -> OAuthConsumer -> a
+    def __init__(self, host, consumerkey, consumersecret):
+        self.host = host
         self.key = consumerkey
         self.secret = consumersecret
         return None
     #__str__ = lambda self: '{{"key": "{0}", "secret": "{1}"}} :: OAuthConsumer'.format(self.key, self.secret)
     __str__ = lambda self: str(vars(self)) + " :: OAuthConsumer"
+    host = None
     key = None# :: Str
     secret = None# :: Str
 
@@ -65,9 +72,9 @@ def main():
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
 
-    consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
-    consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
-    consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
+    consumerlab = OAuthConsumer(Host.lab, '8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
+    consumerbucket = OAuthConsumer(Host.bucket, 'Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
+    consumerhub = OAuthConsumer(Host.hub, "718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
     #print(urlLabOAuthCode(consumerlab))
     #print(getLabOAuthToken(consumerlab, 'e0d9a3c6f72c7800a3a633aea55caea3dde91813c4eb466f82f70c1879cb537b'))
     #refreshbucket = "2g7VCmzNcR8p3XDWa6"
