@@ -85,6 +85,8 @@ class Github:
         url = "https://api.github.com/user/repos"
         headers = { "Authorization": "token {0}".format(self.token.access_token)}
         return http(urllib.request.Request(url, headers=headers))
+    def newOwnRepo():
+        return undefined
 
 class Bitbucket:
     # :: Bitbucket -> OAuthConsumer -> Dict -> Str -> a
