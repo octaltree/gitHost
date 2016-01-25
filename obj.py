@@ -78,6 +78,13 @@ class Github:
     # :: Dict -> Str
     def urlFriendlyRepoFullName(repo):
         return repo['path_with_namespace']
+    # :: Github -> Str -> IO urllib.request.HTTPResponse
+    def getOwnRepos(self, user = None):
+        if user is None:
+            user = self.defaultuser
+        url = "https://api.github.com/user/repos"
+        headers = { "Authorization": "token {0}".format(self.token.access_token)}
+        return http(urllib.request.Request(url, headers=headers))
 
 class Bitbucket:
     # :: Bitbucket -> OAuthConsumer -> Dict -> Str -> a
