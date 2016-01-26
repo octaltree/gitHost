@@ -17,37 +17,50 @@ import datetime
 undefined = None
 
 # USERAGENT :: Str
-USERAGENT = 'gitHost/0.0.1.0' # 何かしら指定しないとhubに怒られる
+USERAGENT = "gitHost/0.0.1.0" # 何かしら指定しないとhubに怒られる
 URLOAUTHCALLBACK = "http://github.com/octaltree" # :: Str
+TIMEFORMAT = "%Y,%j,%H,%M,%S,%f"
+DEFAULTUSER = None
+
+class Host(Enum):
+    hub = "github"
+    bucket = "bitbucket"
+    lab = "gitlab"
+
 class OAuthConsumer:
-    # :: OAuthConsumer -> Str -> Str -> OAuthConsumer -> a
-    def __init__(self, consumerkey, consumersecret):
+    # :: OAuthConsumer -> Host -> Str -> Str -> OAuthConsumer -> a
+    def __init__(self, host, consumerkey, consumersecret):
+        self.host = host
         self.key = consumerkey
         self.secret = consumersecret
         return None
     #__str__ = lambda self: '{{"key": "{0}", "secret": "{1}"}} :: OAuthConsumer'.format(self.key, self.secret)
     __str__ = lambda self: str(vars(self)) + " :: OAuthConsumer"
+    host = None
     key = None# :: Str
     secret = None# :: Str
 
 class OAuthToken:
     # :: OAuthToken -> Dict -> a
-    def __init__(self, token):
+    def __init__(self, token, host, user = DEFAULTUSER):
         try:
             self.access_token = token['access_token']
         except KeyError:
             exit("fail at OAuthToken(" + str(token) + ")")
 
+        self.host = host
+        self.user = user
         self.create_at = datetime.datetime.now()
         self.token_type = token.get("token_type")
         self.scope = token.get("scope", self.scope)
         self.scope = token.get("scopes", self.scope)
         self.refresh_token = token.get("refresh_token")
-        self.expires_in = token.get("expires_in")
+        self.expires_in = token.get("expires_in") # TODO :: datetime.timedelta
         return None
 
     __str__ = lambda self: str(vars(self)) + " :: OAuthToken"
-
+    host = None
+    user = None
     access_token = None # :: Str
     refresh_token = None # :: Str
     scope = None # :: Str
@@ -62,16 +75,24 @@ def main():
     repop = subp.add_parser('repo', help='manipulate remote repo')
     addp = subp.add_parser('add', help='add hosting service provider & user')
     args = rootp.parse_args()
+    if DEFAULTUSER is None:
+        print("please set DEFAULTUSER", file=sys.stderr)
+        exit(1)
 
-    consumerlab = OAuthConsumer('8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
-    consumerbucket = OAuthConsumer('Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
-    consumerhub = OAuthConsumer("718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
+    consumerlab = OAuthConsumer(Host.lab, '8ba20e67ea70d9622041588ecd50774ec56d005d1d363b9938803e7fe1b74179', '36b982ce8292ac99c755811b4010bf596c82172b3bc2968df8b86efdd5daca09')
+    consumerbucket = OAuthConsumer(Host.bucket, 'Ev4c4krDQqHyRd2XH6', 'TvvCNhsZGwFWJ6eBM9Q2crLDUawsQ4Ar')
+    consumerhub = OAuthConsumer(Host.hub, "718bd071955521ca0b6b", "1dbc0c05ab623d5e9a89023b74dbaf08cb06ce2e")
     #print(urlLabOAuthCode(consumerlab))
     #print(getLabOAuthToken(consumerlab, 'e0d9a3c6f72c7800a3a633aea55caea3dde91813c4eb466f82f70c1879cb537b'))
     #refreshbucket = "2g7VCmzNcR8p3XDWa6"
     refreshlab = "3cbccf080bd27ff6dee7d3072854fe492422e17c4810c8de5f4cb7f5d454b189"
     #print(refreshBucketOAuthToken(consumerbucket, refreshbucket))
-    print(refreshLabOAuthToken(consumerlab, refreshlab))
+    #print(refreshLabOAuthToken(consumerlab, refreshlab))
+    return undefined
+
+# :: OAuthToken -> json
+def jsonOAuthToken(token):
+    #return json.dumps(dic)
     return undefined
 
 # :: OAuthConsumer -> Str -> OAuthToken
@@ -211,19 +232,19 @@ def http(request):
         exit(1)
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
-def getOwnBucketRepos(user, token):
+def getOwnBucketRepos(token, user = DEFAULTUSER):
     url = "https://api.bitbucket.org/2.0/repositories/{0}".format(urllib.parse.quote(user))
     headers = { "Authorization": "Bearer {0}".format(token)}
     return http(urllib.request.Request(url, headers=headers))
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
-def getOwnHubRepos(user, token):
+def getOwnHubRepos(token, user = DEFAULTUSER):
     url = "https://api.github.com/user/repos"
     headers = { "Authorization": "token {0}".format(token)}
     return http(urllib.request.Request(url, headers=headers))
 
 # :: Str -> Str -> IO urllib.request.HTTPResponse
-def getOwnLabRepos(user, token):
+def getOwnLabRepos(token, user = DEFAULTUSER):
     url = "https://gitlab.com/api/v3/projects"
     headers = { "PRIVATE-TOKEN": "{0}".format(token)}
     return http(urllib.request.Request(url, headers=headers))
