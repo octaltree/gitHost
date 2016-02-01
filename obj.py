@@ -312,8 +312,25 @@ class OAuthToken:
 
 # main :: IO Int
 def main():
+    mainp = argparse.ArgumentParser()
+    mainp.set_defaults(func=id)
+    subps = mainp.add_subparsers()
+
+    lsp = subps.add_parser('list', help='')
+    lsp.add_argument('-v', '--verbose', default=False, action="store_true")
+    lsp.set_defaults(func=ls)
+
+    addp = subps.add_parser('add', help='')
+    addp.set_defaults(func=add)
     return 0
 
+# :: argparse.Namespace -> IO ()
+def ls(args):
+    return undefined
+
+# :: argparse.Namespace -> IO ()
+def add(args):
+    return undefined
 
 # :: IO ()
 def touchConfig():
