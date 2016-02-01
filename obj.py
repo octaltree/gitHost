@@ -313,7 +313,7 @@ class OAuthToken:
 # main :: IO Int
 def main():
     mainp = argparse.ArgumentParser()
-    mainp.set_defaults(func=id)
+    mainp.set_defaults(func=tuplize)
     subps = mainp.add_subparsers()
 
     lsp = subps.add_parser('list', help='')
@@ -322,7 +322,15 @@ def main():
 
     addp = subps.add_parser('add', help='')
     addp.set_defaults(func=add)
+
+    args = mainp.parse_args()
+    args.func(args)
     return 0
+
+def no(*args):
+
+# :: argparse.Namespace -> IO ()
+tuplize = lambda *args: args
 
 # :: argparse.Namespace -> IO ()
 def ls(args):
