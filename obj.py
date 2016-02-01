@@ -162,6 +162,15 @@ class Gitlab:
     # :: Dict -> Str
     def urlFriendlyRepoFullName(repo):
         return repo['path_with_namespace']
+    # :: Gitlab -> Str -> IO urllib.request.HTTPResponse
+    def getOwnRepos(self, user = None):
+        if user is None:
+            user = self.defaultuser
+        url = "https://gitlab.com/api/v3/projects"
+        headers = { "PRIVATE-TOKEN": "{0}".format(token)}
+        return http(urllib.request.Request(url, headers=headers))
+    def newOwnRepo():
+        return undefined
 
 class OAuthConsumer:
     # :: OAuthConsumer -> Str -> Str -> a
