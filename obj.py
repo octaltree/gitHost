@@ -151,6 +151,26 @@ class Gitlab:
             return t
         except KeyError:
             exit(token)
+    # :: Gitlab -> Str -> OAuthToken
+    def refreshOAuthToken(self, user=None):
+        if user is None:
+            user = defaultuser
+        url = "https://gitlab.com/oauth/token"
+        data = urllib.parse.urlencode([
+            ("client_id", self.consumer.key),
+            ("client_secret", self.consumer.secret),
+            ("refresh_token", self.tokens['user'].refreshtoken),
+            ("grant_type", "refresh_token"),
+            ("redirect_uri", URLOAUTHCALLBACK)
+            ]).encode('utf-8')
+        headers = {
+                "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+        req = urllib.request.Request(url, data, headers)
+        token = json.loads(body(http(req))) # :: Dict
+        try:
+            return OAuthToken(token)
+        except KeyError:
+            exit(token)
     # :: Gitlab -> Str
     def urlOAuthCode(self):
         return urllib.parse.urlunparse(("https", "gitlab.com", "/oauth/authorize", "",
