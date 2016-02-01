@@ -153,7 +153,7 @@ class Bitbucket:
         return urllib.parse.urlunparse(("https", "bicbucket.org", "/site/oauth2/authorize", "",
             urllib.parse.urlencode([
                 ("client_id", self.consumer.key),
-                ("response_type", "code"),
+                ("response_type", "code")
                 ]), ""))
     # :: Dict -> Str
     def urlFriendlyRepoFullName(repo):
