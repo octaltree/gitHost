@@ -312,16 +312,6 @@ class OAuthToken:
 
 # main :: IO Int
 def main():
-    touchConfig()
-    dic = inputConfig(readConfig())
-    hub = dic.get('github') # :: Github
-    lab = dic.get('gitlab') # :: Gitlab
-    bucket = dic.get('bitbucket') # ::  Bitbucket
-    print(hub)
-    #print(hub.urlOAuthCode())
-    #print(hub.getOAuthToken("octaltree", "97f6d1094666d527c28f"))
-    #print(hub.tokens)
-    #writeConfig(outputConfig(hub, bucket, lab))
     return 0
 
 
