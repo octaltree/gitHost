@@ -47,6 +47,8 @@ class Github:
     def getOAuthToken(self, user, code):
         if self.consumer is None:
             exit("need consumerkey, secret to get access_token")
+        if self.defaultuser is None:
+            self.defaultuser = user
         data = urllib.parse.urlencode([
             ("client_id", self.consumer.key),
             ("client_secret", self.consumer.secret),
@@ -106,6 +108,65 @@ class Bitbucket:
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
+    # :: Bitbucket -> Str -> Str -> OAuthToken
+    def getOAuthToken(self, user, code):
+        if self.consumer is None:
+            exit("need consumerkey, secret to get access_token")
+        if self.defaultuser is None:
+            self.defaultuser = user
+        url = "https://bitbucket.org/site/oauth2/access_token"
+        data = urllib.parse.urlencode([
+            ("client_id", self.consumer.key),
+            ("client_secret", self.consumer.secret),
+            ("code", code),
+            ("grant_type", "authorization_code")
+            ]).encode('utf-8')
+        headers = {
+                "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+        req = urllib.request.Request(url, data, headers)
+        token = json.loads(body(http(req))) # :: Dict
+        try:
+            return OAuthToken(token)
+        except KeyError:
+            exit(token)
+    # :: Bitbucket -> Str -> OAuthToken
+    def refreshOAuthToken(self, user=None):
+        if user is None:
+            user = defaultuser
+        url = "https://bitbucket.org/site/oauth2/access_token"
+        data = urllib.parse.urlencode([
+            ("client_id", self.consumer.key),
+            ("client_secret", self.consumer.secret),
+            ("refresh_token", self.tokens[user].refresh_token),
+            ("grant_type", "refresh_token")
+            ]).encode('utf-8')
+        headers = {
+                "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+        req = urllib.request.Request(url, data, headers)
+        token = json.loads(body(http(req))) # :: Dict
+        try:
+            return OAuthToken(token)
+        except KeyError:
+            exit(token)
+    # :: Bitbucket -> Str
+    def urlOAuthCode(self):
+        return urllib.parse.urlunparse(("https", "bicbucket.org", "/site/oauth2/authorize", "",
+            urllib.parse.urlencode([
+                ("client_id", self.consumer.key),
+                ("response_type", "code")
+                ]), ""))
+    # :: Dict -> Str
+    def urlFriendlyRepoFullName(repo):
+        return "{0}/{1}".format(repo['owner']['username'], repo['name'])
+    # :: Bitbucket -> Str -> IO urllib.request.HTTPResponse
+    def getOwnRepos(self, user = None):
+        if user is None:
+            user = self.defaultuser
+        url = "https://api.bitbucket.org/2.0/repositories/{0}".format(urllib.parse.quote(user))
+        headers = { "Authorization": "Bearer {0}".format(token)}
+        return http(urllib.request.Request(url, headers=headers))
+    def newOwnRepo():
+        return undefined
 
 class Gitlab:
     # :: Gitlab -> OAuthConsumer -> Dict -> Str -> a
