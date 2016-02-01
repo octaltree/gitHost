@@ -125,6 +125,40 @@ class Gitlab:
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
+    # :: Gitlab -> Str -> Str -> OAuthToken
+    def getOAuthToken(self, user, code):
+        if self.consumer is None:
+            exit("need consumerkey, secret to get access_token")
+        url = "https://gitlab.com/oauth/token"
+        data = urllib.parse.urlencode([
+            ("client_id", consumer.key),
+            ("client_secret", consumer.secret),
+            ("code", code),
+            ("grant_type", "authorization_code"),
+            ("redirect_uri", URLOAUTHCALLBACK)
+            ]).encode('utf-8')
+        headers = {
+                "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+        req = urllib.request.Request(url,
+                data, headers)
+        token = json.loads(body(http(req))) # :: Dict
+        try:
+            t = OAuthToken(token)
+            if self.tokens is None:
+                self.tokens = {}
+            print(self.tokens)
+            self.tokens.update({user: t})
+            return t
+        except KeyError:
+            exit(token)
+    # :: Gitlab -> Str
+    def urlOAuthCode(self):
+        return urllib.parse.urlunparse(("https", "gitlab.com", "/oauth/authorize", "",
+            urllib.parse.urlencode([
+                ("client_id", self.consumer.key),
+                ("response_type", "code"),
+                ("redirect_uri", URLOAUTHCALLBACK)
+                ]), ""))
 
 class OAuthConsumer:
     # :: OAuthConsumer -> Str -> Str -> a
