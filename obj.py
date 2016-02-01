@@ -323,21 +323,22 @@ def main():
     addp = subps.add_parser('add', help='')
     addp.set_defaults(func=add)
 
+    # 引数パースする前にconfig読み込んでおく
+    conf = inputConfig(readConfig()) # :: Dict
+
+    # 引数パース
     args = mainp.parse_args()
-    args.func(args)
+    args.func(args, conf)
     return 0
 
-def no(*args):
-
-# :: argparse.Namespace -> IO ()
 tuplize = lambda *args: args
 
-# :: argparse.Namespace -> IO ()
-def ls(args):
+# :: argparse.Namespace -> Dict -> IO ()
+def ls(args, conf):
     return undefined
 
-# :: argparse.Namespace -> IO ()
-def add(args):
+# :: argparse.Namespace -> Dict -> IO ()
+def add(args, conf):
     return undefined
 
 # :: IO ()
