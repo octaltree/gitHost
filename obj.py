@@ -77,7 +77,7 @@ class Github:
                 ]), ""))
     # :: Dict -> Str
     def urlFriendlyRepoFullName(repo):
-        return repo['path_with_namespace']
+        return repo['fulll_name']
     # :: Github -> Str -> IO urllib.request.HTTPResponse
     def getOwnRepos(self, user = None):
         if user is None:
@@ -159,6 +159,9 @@ class Gitlab:
                 ("response_type", "code"),
                 ("redirect_uri", URLOAUTHCALLBACK)
                 ]), ""))
+    # :: Dict -> Str
+    def urlFriendlyRepoFullName(repo):
+        return repo['path_with_namespace']
 
 class OAuthConsumer:
     # :: OAuthConsumer -> Str -> Str -> a
