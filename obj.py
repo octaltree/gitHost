@@ -159,7 +159,7 @@ class Gitlab:
         data = urllib.parse.urlencode([
             ("client_id", self.consumer.key),
             ("client_secret", self.consumer.secret),
-            ("refresh_token", self.tokens['user'].refreshtoken),
+            ("refresh_token", self.tokens[user].refreshtoken),
             ("grant_type", "refresh_token"),
             ("redirect_uri", URLOAUTHCALLBACK)
             ]).encode('utf-8')
