@@ -318,10 +318,10 @@ def main():
 
     lsp = subps.add_parser('list', help='')
     lsp.add_argument('-v', '--verbose', default=False, action="store_true")
-    lsp.add_argument('user@host', nargs='+')
+    lsp.add_argument('location', nargs='+', help='format user@host')
     lsp.set_defaults(func=ls)
 
-    addp = subps.add_parser('add', help='')
+    addp = subps.add_parser('add', help='未実装')
     addp.add_argument('-d', '--default', help='set default user')
     addp.add_argument('-t', '--token', help='get token from code')
     addp.add_argument('-c', '--consumer', help='add consumer')
@@ -341,7 +341,9 @@ tuplize = lambda *args: args
 
 # :: argparse.Namespace -> Dict -> IO ()
 def ls(args, conf):
-    return undefined
+    outs = [] # :: [Str]
+    [print(i) for i in outs]
+    return ()
 
 # :: argparse.Namespace -> Dict -> IO ()
 def add(args, conf):
