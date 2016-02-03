@@ -318,9 +318,13 @@ def main():
 
     lsp = subps.add_parser('list', help='')
     lsp.add_argument('-v', '--verbose', default=False, action="store_true")
+    lsp.add_argument('user@host', nargs='+')
     lsp.set_defaults(func=ls)
 
     addp = subps.add_parser('add', help='')
+    addp.add_argument('-d', '--default', help='set default user')
+    addp.add_argument('-t', '--token', help='get token from code')
+    addp.add_argument('-c', '--consumer', help='add consumer')
     addp.set_defaults(func=add)
 
     # 引数パースする前にconfig読み込んでおく
