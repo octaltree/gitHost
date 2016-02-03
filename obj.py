@@ -312,18 +312,42 @@ class OAuthToken:
 
 # main :: IO Int
 def main():
-    touchConfig()
-    dic = inputConfig(readConfig())
-    hub = dic.get('github') # :: Github
-    lab = dic.get('gitlab') # :: Gitlab
-    bucket = dic.get('bitbucket') # ::  Bitbucket
-    print(hub)
-    #print(hub.urlOAuthCode())
-    #print(hub.getOAuthToken("octaltree", "97f6d1094666d527c28f"))
-    #print(hub.tokens)
-    #writeConfig(outputConfig(hub, bucket, lab))
+    mainp = argparse.ArgumentParser()
+    mainp.set_defaults(func=tuplize)
+    subps = mainp.add_subparsers()
+
+    lsp = subps.add_parser('list', help='')
+    lsp.add_argument('-v', '--verbose', default=False, action="store_true")
+    lsp.add_argument('location', nargs='+', help='format user@host')
+    lsp.set_defaults(func=ls)
+
+    addp = subps.add_parser('add', help='未実装')
+    addp.add_argument('-d', '--default', help='set default user')
+    addp.add_argument('-t', '--token', help='get token from code')
+    addp.add_argument('-c', '--consumer', help='add consumer')
+    addp.add_argument('-u', '--user')
+    addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
+    addp.set_defaults(func=add)
+
+    # 引数パースする前にconfig読み込んでおく
+    conf = inputConfig(readConfig()) # :: Dict
+
+    # 引数パース
+    args = mainp.parse_args()
+    args.func(args, conf)
     return 0
 
+tuplize = lambda *args: args
+
+# :: argparse.Namespace -> Dict -> IO ()
+def ls(args, conf):
+    outs = [] # :: [Str]
+    [print(i) for i in outs]
+    return ()
+
+# :: argparse.Namespace -> Dict -> IO ()
+def add(args, conf):
+    return undefined
 
 # :: IO ()
 def touchConfig():
