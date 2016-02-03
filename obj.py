@@ -325,6 +325,8 @@ def main():
     addp.add_argument('-d', '--default', help='set default user')
     addp.add_argument('-t', '--token', help='get token from code')
     addp.add_argument('-c', '--consumer', help='add consumer')
+    addp.add_argument('-u', '--user')
+    addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
     addp.set_defaults(func=add)
 
     # 引数パースする前にconfig読み込んでおく
