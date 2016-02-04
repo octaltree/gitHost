@@ -143,7 +143,7 @@ class Bitbucket:
     # :: Bitbucket -> Str -> OAuthToken
     def refreshOAuthToken(self, user=None):
         if user is None:
-            user = defaultuser
+            user = self.defaultuser
         url = "https://bitbucket.org/site/oauth2/access_token"
         data = urllib.parse.urlencode([
             ("client_id", self.consumer.key),
@@ -237,12 +237,12 @@ class Gitlab:
     # :: Gitlab -> Str -> OAuthToken
     def refreshOAuthToken(self, user=None):
         if user is None:
-            user = defaultuser
+            user = self.defaultuser
         url = "https://gitlab.com/oauth/token"
         data = urllib.parse.urlencode([
             ("client_id", self.consumer.key),
             ("client_secret", self.consumer.secret),
-            ("refresh_token", self.tokens[user].refreshtoken),
+            ("refresh_token", self.tokens[user].refresh_token),
             ("grant_type", "refresh_token"),
             ("redirect_uri", URLOAUTHCALLBACK)
             ]).encode('utf-8')
@@ -361,6 +361,7 @@ def main():
     addp.add_argument('-c', '--consumer', help='add consumer format key:secret')
     addp.add_argument('-u', '--user')
     addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
+    addp.add_argument('-r', '--refresh', default=False, action="store_true")
     addp.set_defaults(func=add)
 
     # 引数パースする前にconfig読み込んでおく
@@ -427,6 +428,10 @@ def add(args, conf):
             host = Bitbucket(None, {})
     else:
         host = conf[args.server]
+
+    if args.refresh:
+        if type(host) != Github:
+            host.refreshOAuthToken(args.user)
 
     if args.default:
         if args.user is None:
