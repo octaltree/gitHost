@@ -39,7 +39,7 @@ class Github:
                 "consumer": diccon,
                 "defaultuser": self.defaultuser,
                 "tokens": dictoken}
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_keys=True)
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
@@ -64,7 +64,6 @@ class Github:
             t = OAuthToken(token)
             if self.tokens is None:
                 self.tokens = {}
-            print(self.tokens)
             self.tokens.update({user: t})
             return t
         except KeyError:
@@ -97,7 +96,7 @@ class Github:
 
 class Bitbucket:
     # :: Bitbucket -> OAuthConsumer -> Dict -> Str -> a
-    def __init__(self, consumer, dictoken):
+    def __init__(self, consumer, dictoken, defaultuser=None):
         self.consumer = consumer
         self.tokens = dictoken
         self.defaultuser = defaultuser
@@ -105,11 +104,14 @@ class Bitbucket:
     # :: Bitbucket -> Str
     def json(self):
         diccon = json.loads(self.consumer.json())
-        dictoken = json.loads(self.toknes.json())
+        dictoken = dict(map(
+            lambda kv: (kv[0], json.loads(kv[1].json())),
+            self.tokens.items()))
         dic = {
                 "consumer": diccon,
+                "defaultuser": self.defaultuser,
                 "tokens": dictoken}
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_keys=True)
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
@@ -131,7 +133,11 @@ class Bitbucket:
         req = urllib.request.Request(url, data, headers)
         token = json.loads(body(http(req))) # :: Dict
         try:
-            return OAuthToken(token)
+            t = OAuthToken(token)
+            if self.tokens is None:
+                self.tokens = {}
+            self.tokens.update({user: t})
+            return t
         except KeyError:
             exit(token)
     # :: Bitbucket -> Str -> OAuthToken
@@ -150,12 +156,16 @@ class Bitbucket:
         req = urllib.request.Request(url, data, headers)
         token = json.loads(body(http(req))) # :: Dict
         try:
-            return OAuthToken(token)
+            t = OAuthToken(token)
+            if self.tokens is None:
+                self.tokens = {}
+            self.tokens.update({user: t})
+            return t
         except KeyError:
             exit(token)
     # :: Bitbucket -> Str
     def urlOAuthCode(self):
-        return urllib.parse.urlunparse(("https", "bicbucket.org", "/site/oauth2/authorize", "",
+        return urllib.parse.urlunparse(("https", "bitbucket.org", "/site/oauth2/authorize", "",
             urllib.parse.urlencode([
                 ("client_id", self.consumer.key),
                 ("response_type", "code")
@@ -180,7 +190,7 @@ class Bitbucket:
 
 class Gitlab:
     # :: Gitlab -> OAuthConsumer -> Dict -> Str -> a
-    def __init__(self, consumer, dictoken):
+    def __init__(self, consumer, dictoken, defaultuser=None):
         self.defaultuser = defaultuser
         self.consumer = consumer
         self.tokens = dictoken
@@ -188,11 +198,14 @@ class Gitlab:
     # :: Gitlab -> Str
     def json(self):
         diccon = json.loads(self.consumer.json())
-        dictoken = json.loads(self.toknes.json())
+        dictoken = dict(map(
+            lambda kv: (kv[0], json.loads(kv[1].json())),
+            self.tokens.items()))
         dic = {
                 "consumer": diccon,
+                "defaultuser": self.defaultuser,
                 "tokens": dictoken}
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_keys=True)
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
@@ -202,8 +215,8 @@ class Gitlab:
             exit("need consumerkey, secret to get access_token")
         url = "https://gitlab.com/oauth/token"
         data = urllib.parse.urlencode([
-            ("client_id", consumer.key),
-            ("client_secret", consumer.secret),
+            ("client_id", self.consumer.key),
+            ("client_secret", self.consumer.secret),
             ("code", code),
             ("grant_type", "authorization_code"),
             ("redirect_uri", URLOAUTHCALLBACK)
@@ -217,7 +230,6 @@ class Gitlab:
             t = OAuthToken(token)
             if self.tokens is None:
                 self.tokens = {}
-            print(self.tokens)
             self.tokens.update({user: t})
             return t
         except KeyError:
@@ -239,7 +251,11 @@ class Gitlab:
         req = urllib.request.Request(url, data, headers)
         token = json.loads(body(http(req))) # :: Dict
         try:
-            return OAuthToken(token)
+            t = OAuthToken(token)
+            if self.tokens is None:
+                self.tokens = {}
+            self.tokens.update({user: t})
+            return t
         except KeyError:
             exit(token)
     # :: Gitlab -> Str
@@ -263,7 +279,8 @@ class Gitlab:
                     file=sys.stderr)
             exit(1)
         url = "https://gitlab.com/api/v3/projects"
-        headers = { "PRIVATE-TOKEN": "{0}".format(token.access_token)}
+        #headers = { "PRIVATE-TOKEN": "{0}".format(token.access_token)}
+        headers = { "Authorization": "Bearer {0}".format(token.access_token)}
         return http(urllib.request.Request(url, headers=headers))
     def newOwnRepo():
         return undefined
@@ -275,7 +292,7 @@ class OAuthConsumer:
         self.secret = secret
         return None
     __str__ = lambda self: str(vars(self)) + " :: OAuthConsumer"
-    json = lambda self: json.dumps(vars(self))
+    json = lambda self: json.dumps(vars(self), ensure_ascii=False, sort_keys=True)
     # :: Dict -> OAuthConsumer
     def fromDict(dic):
         return OAuthConsumer(dic['key'], dic['secret'])
@@ -304,7 +321,7 @@ class OAuthToken:
         dic.update({"create_at": self.create_at.strftime(TIMEFORMAT)})
         if self.expires_in is not None:
             dic.update({"expires_in": self.expires_in.total_seconds()})
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_keys=True)
     # :: Dict -> OAuthConsumer
     def fromDict(dic):
         res = OAuthToken(dic)
@@ -333,19 +350,21 @@ def main():
 
     lsp = subps.add_parser('list', help='')
     lsp.add_argument('-v', '--verbose', default=False, action="store_true", help="未実装")
+    lsp.add_argument('-p', '--page', default=False, action="store_true", help='url for get OAuthCode')
     lsp.add_argument('location', nargs='+', help='format user@host choised from ["github", "bitbucket", "gitlab"]')
     lsp.set_defaults(func=ls)
 
     addp = subps.add_parser('add', help='未実装')
     addp.add_argument('-d', '--default', default=False, action="store_true",
             help='set user as default')
-    addp.add_argument('-t', '--token', help='get token from code')
+    addp.add_argument('-t', '--token', type=str, help='get token from code')
     addp.add_argument('-c', '--consumer', help='add consumer format key:secret')
     addp.add_argument('-u', '--user')
     addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
     addp.set_defaults(func=add)
 
     # 引数パースする前にconfig読み込んでおく
+    touchConfig()
     conf = inputConfig(readConfig()) # :: Dict
 
     # 引数パース
@@ -357,6 +376,17 @@ tuplize = lambda *args: args
 
 # :: argparse.Namespace -> Dict -> IO ()
 def ls(args, conf):
+    if args.page:
+        outs = []
+        for uh in args.location:
+            hn = hostname(uh)
+            host = conf.get(hn)
+            if host is None:
+                print('no configed', file=sys.stderr)
+                exit(1)
+            outs.append(host.urlOAuthCode())
+        [print(i) for i in outs]
+        return ()
     outs = [] # :: [Str]
     for uh in args.location:
         hn = hostname(uh)
@@ -370,7 +400,7 @@ def ls(args, conf):
                     for repo in json.loads(body(host.getOwnRepos(un)))]
         elif hn == 'bitbucket':
             [outs.append("bitbucket/" + Bitbucket.urlFriendlyRepoFullName(repo))
-                    for repo in json.loads(body(host.getOwnRepos(un)))]
+                    for repo in json.loads(body(host.getOwnRepos(un)))['values']]
         elif hn == 'gitlab':
             [outs.append("gitlab/" + Gitlab.urlFriendlyRepoFullName(repo))
                     for repo in json.loads(body(host.getOwnRepos(un)))]
@@ -388,28 +418,28 @@ def username(uh):
 # :: argparse.Namespace -> Dict -> IO ()
 def add(args, conf):
     host = None
-    if conf.get(host.server) is None:
-        if host.server == "github":
-            host = Github()
-        elif host.server == "gitlab":
-            host = Gitlab()
-        elif host.server == "bitbucket":
-            host = Bitbucket()
+    if conf.get(args.server) is None:
+        if args.server == "github":
+            host = Github(None, {})
+        elif args.server == "gitlab":
+            host = Gitlab(None, {})
+        elif args.server == "bitbucket":
+            host = Bitbucket(None, {})
     else:
-        host = conf[host.server]
+        host = conf[args.server]
 
     if args.default:
         if args.user is None:
             print("try to set default but no input. use -u", file=sys.stderr)
             exit(1)
         host.defaultuser = args.user
-        conf.update({args.host: host})
+        conf.update({args.server: host})
     if args.token is not None:
         if args.user is None:
             print("use -u for save token", file=sys.stderr)
             exit(1)
         host.getOAuthToken(args.user, args.token)
-        conf.update({args.host: host})
+        conf.update({args.server: host})
     if args.consumer is not None:
         if args.consumer.find(':') == -1:
             print("consumer format key:secret", file=sys.stderr)
@@ -417,7 +447,12 @@ def add(args, conf):
         key = lambda c: c[:c.find(':')]
         secret = lambda c: c[c.find(':')+1:]
         host.consumer = OAuthConsumer(key(args.consumer), secret(args.consumer))
-        conf.update({args.host: host})
+        conf.update({args.server: host})
+    rawjson = outputConfig(
+            conf.get('github'),
+            conf.get('bitbucket'),
+            conf.get('gitlab'))
+    writeConfig(rawjson)
     return ()
 
 # :: IO ()
@@ -448,10 +483,12 @@ def outputConfig(hub=None, bucket=None, lab=None):
         dic.update({"bitbucket": json.loads(bucket.json())})
     if lab is not None:
         dic.update({"gitlab": json.loads(lab.json())})
-    return json.dumps(dic, ensure_ascii=False, indent=4, separators=(',', ':'))
+    return json.dumps(dic, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ':'))
 
 # :: Str -> Dict
 def inputConfig(rawjson):
+    if rawjson == "":
+        rawjson = "{}"
     try:
         dic = json.loads(rawjson)
     except:
@@ -471,10 +508,10 @@ def inputConfig(rawjson):
         res.update({"github": Github(t[0], t[1], t[2])})
     if dic.get("bitbucket") is not None:
         t = read(dic['bitbucket'])
-        res.update({"bitbucket": Github(t[0], t[1], t[2])})
+        res.update({"bitbucket": Bitbucket(t[0], t[1], t[2])})
     if dic.get("gitlab") is not None:
         t = read(dic['gitlab'])
-        res.update({"gitlab": Github(t[0], t[1], t[2])})
+        res.update({"gitlab": Gitlab(t[0], t[1], t[2])})
     return res
 
 # :: urllib.request.Request -> IO urllib.request.HTTPResponse
