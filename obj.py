@@ -79,7 +79,7 @@ class Github:
                 ]), ""))
     # :: Dict -> Str
     def urlFriendlyRepoFullName(repo):
-        return repo['fulll_name']
+        return repo['full_name']
     # :: Github -> Str -> IO urllib.request.HTTPResponse
     def getOwnRepos(self, user = None):
         if user is None:
@@ -332,7 +332,7 @@ def main():
     subps = mainp.add_subparsers()
 
     lsp = subps.add_parser('list', help='')
-    lsp.add_argument('-v', '--verbose', default=False, action="store_true")
+    lsp.add_argument('-v', '--verbose', default=False, action="store_true", help="未実装")
     lsp.add_argument('location', nargs='+', help='format user@host choised from ["github", "bitbucket", "gitlab"]')
     lsp.set_defaults(func=ls)
 
@@ -364,13 +364,7 @@ def ls(args, conf):
             print('no configed', file=sys.stderr)
             exit(1)
         un = username(uh)
-        if un is None and host.defaultuser is not None:
-            un = host.defaultuser
-        token = host.tokens.get(un)
-        if token is None:
-            print("couldn't get token from user or defaultuser",
-                    file=sys.stderr)
-            exit(2)
+        [outs.append(Github.urlFriendlyRepoFullName(repo)) for repo in json.loads(body(host.getOwnRepos(un)))]
     [print(i) for i in outs]
     return ()
 
