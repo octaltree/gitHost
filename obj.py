@@ -39,7 +39,7 @@ class Github:
                 "consumer": diccon,
                 "defaultuser": self.defaultuser,
                 "tokens": dictoken}
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_key=True)
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
@@ -111,7 +111,7 @@ class Bitbucket:
                 "consumer": diccon,
                 "defaultuser": self.defaultuser,
                 "tokens": dictoken}
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_key=True)
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
@@ -205,7 +205,7 @@ class Gitlab:
                 "consumer": diccon,
                 "defaultuser": self.defaultuser,
                 "tokens": dictoken}
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_key=True)
     defaultuser = None # :: Str
     consumer = None # :: OAuthConsumer
     tokens = None # :: Dict # username to OAuthToken
@@ -291,7 +291,7 @@ class OAuthConsumer:
         self.secret = secret
         return None
     __str__ = lambda self: str(vars(self)) + " :: OAuthConsumer"
-    json = lambda self: json.dumps(vars(self))
+    json = lambda self: json.dumps(vars(self), ensure_ascii=False, sort_key=True)
     # :: Dict -> OAuthConsumer
     def fromDict(dic):
         return OAuthConsumer(dic['key'], dic['secret'])
@@ -320,7 +320,7 @@ class OAuthToken:
         dic.update({"create_at": self.create_at.strftime(TIMEFORMAT)})
         if self.expires_in is not None:
             dic.update({"expires_in": self.expires_in.total_seconds()})
-        return json.dumps(dic, ensure_ascii=False)
+        return json.dumps(dic, ensure_ascii=False, sort_key=True)
     # :: Dict -> OAuthConsumer
     def fromDict(dic):
         res = OAuthToken(dic)
@@ -482,7 +482,7 @@ def outputConfig(hub=None, bucket=None, lab=None):
         dic.update({"bitbucket": json.loads(bucket.json())})
     if lab is not None:
         dic.update({"gitlab": json.loads(lab.json())})
-    return json.dumps(dic, ensure_ascii=False, indent=4, separators=(',', ':'))
+    return json.dumps(dic, ensure_ascii=False, sort_key=True, indent=4, separators=(',', ':'))
 
 # :: Str -> Dict
 def inputConfig(rawjson):
