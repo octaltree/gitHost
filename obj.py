@@ -346,6 +346,7 @@ def main():
     addp.set_defaults(func=add)
 
     # 引数パースする前にconfig読み込んでおく
+    touchConfig()
     conf = inputConfig(readConfig()) # :: Dict
 
     # 引数パース
@@ -452,6 +453,8 @@ def outputConfig(hub=None, bucket=None, lab=None):
 
 # :: Str -> Dict
 def inputConfig(rawjson):
+    if rawjson == "":
+        rawjson = "{}"
     try:
         dic = json.loads(rawjson)
     except:
