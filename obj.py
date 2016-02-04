@@ -157,7 +157,7 @@ class Bitbucket:
             exit(token)
     # :: Bitbucket -> Str
     def urlOAuthCode(self):
-        return urllib.parse.urlunparse(("https", "bicbucket.org", "/site/oauth2/authorize", "",
+        return urllib.parse.urlunparse(("https", "bitbucket.org", "/site/oauth2/authorize", "",
             urllib.parse.urlencode([
                 ("client_id", self.consumer.key),
                 ("response_type", "code")
