@@ -364,7 +364,15 @@ def ls(args, conf):
             print('no configed', file=sys.stderr)
             exit(1)
         un = username(uh)
-        [outs.append(Github.urlFriendlyRepoFullName(repo)) for repo in json.loads(body(host.getOwnRepos(un)))]
+        if hn == 'github':
+            [outs.append(Github.urlFriendlyRepoFullName(repo))
+                    for repo in json.loads(body(host.getOwnRepos(un)))]
+        elif hn == 'bitbucket':
+            [outs.append(Bitbucket.urlFriendlyRepoFullName(repo))
+                    for repo in json.loads(body(host.getOwnRepos(un)))]
+        elif hn == 'gitlab':
+            [outs.append(Gitlab.urlFriendlyRepoFullName(repo))
+                    for repo in json.loads(body(host.getOwnRepos(un)))]
     [print(i) for i in outs]
     return ()
 
