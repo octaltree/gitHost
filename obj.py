@@ -333,7 +333,7 @@ def main():
 
     lsp = subps.add_parser('list', help='')
     lsp.add_argument('-v', '--verbose', default=False, action="store_true")
-    lsp.add_argument('location', nargs='+', help='format user@host')
+    lsp.add_argument('location', nargs='+', help='format user@host choised from ["github", "bitbucket", "gitlab"]')
     lsp.set_defaults(func=ls)
 
     addp = subps.add_parser('add', help='未実装')
@@ -357,8 +357,30 @@ tuplize = lambda *args: args
 # :: argparse.Namespace -> Dict -> IO ()
 def ls(args, conf):
     outs = [] # :: [Str]
+    for uh in args.location:
+        hn = hostname(uh)
+        host = conf.get(hn)
+        if host is None:
+            print('no configed', file=sys.stderr)
+            exit(1)
+        un = username(uh)
+        if un is None and host.defaultuser is not None:
+            un = host.defaultuser
+        token = host.tokens.get(un)
+        if token is None:
+            print("couldn't get token from user or defaultuser",
+                    file=sys.stderr)
+            exit(2)
     [print(i) for i in outs]
     return ()
+
+# :: Str -> Str
+def hostname(uh):
+    return uh[uh.find('@')+1:] if uh.find('@') != -1 else uh
+
+# :: Str -> Str
+def username(uh):
+    return uh[:uh.find('@')] if uh.find('@') != -1 else None
 
 # :: argparse.Namespace -> Dict -> IO ()
 def add(args, conf):
