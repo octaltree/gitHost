@@ -495,10 +495,10 @@ def inputConfig(rawjson):
         res.update({"github": Github(t[0], t[1], t[2])})
     if dic.get("bitbucket") is not None:
         t = read(dic['bitbucket'])
-        res.update({"bitbucket": Github(t[0], t[1], t[2])})
+        res.update({"bitbucket": Bitbucket(t[0], t[1], t[2])})
     if dic.get("gitlab") is not None:
         t = read(dic['gitlab'])
-        res.update({"gitlab": Github(t[0], t[1], t[2])})
+        res.update({"gitlab": Gitlab(t[0], t[1], t[2])})
     return res
 
 # :: urllib.request.Request -> IO urllib.request.HTTPResponse
