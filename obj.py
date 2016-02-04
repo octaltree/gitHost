@@ -84,8 +84,13 @@ class Github:
     def getOwnRepos(self, user = None):
         if user is None:
             user = self.defaultuser
+        token = self.tokens.get(user)
+        if token is None:
+            print("couldn't get token from user or defaultuser",
+                    file=sys.stderr)
+            exit(1)
         url = "https://api.github.com/user/repos"
-        headers = { "Authorization": "token {0}".format(self.token.access_token)}
+        headers = { "Authorization": "token {0}".format(token.access_token)}
         return http(urllib.request.Request(url, headers=headers))
     def newOwnRepo():
         return undefined
@@ -162,8 +167,13 @@ class Bitbucket:
     def getOwnRepos(self, user = None):
         if user is None:
             user = self.defaultuser
+        token = self.tokens.get(user)
+        if token is None:
+            print("couldn't get token from user or defaultuser",
+                    file=sys.stderr)
+            exit(1)
         url = "https://api.bitbucket.org/2.0/repositories/{0}".format(urllib.parse.quote(user))
-        headers = { "Authorization": "Bearer {0}".format(token)}
+        headers = { "Authorization": "Bearer {0}".format(token.access_token)}
         return http(urllib.request.Request(url, headers=headers))
     def newOwnRepo():
         return undefined
@@ -247,8 +257,13 @@ class Gitlab:
     def getOwnRepos(self, user = None):
         if user is None:
             user = self.defaultuser
+        token = self.tokens.get(user)
+        if token is None:
+            print("couldn't get token from user or defaultuser",
+                    file=sys.stderr)
+            exit(1)
         url = "https://gitlab.com/api/v3/projects"
-        headers = { "PRIVATE-TOKEN": "{0}".format(token)}
+        headers = { "PRIVATE-TOKEN": "{0}".format(token.access_token)}
         return http(urllib.request.Request(url, headers=headers))
     def newOwnRepo():
         return undefined
