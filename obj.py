@@ -133,7 +133,11 @@ class Bitbucket:
         req = urllib.request.Request(url, data, headers)
         token = json.loads(body(http(req))) # :: Dict
         try:
-            return OAuthToken(token)
+            t = OAuthToken(token)
+            if self.tokens is None:
+                self.tokens = {}
+            self.tokens.update({user: t})
+            return t
         except KeyError:
             exit(token)
     # :: Bitbucket -> Str -> OAuthToken
