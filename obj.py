@@ -399,7 +399,7 @@ def ls(args, conf):
                     for repo in json.loads(body(host.getOwnRepos(un)))]
         elif hn == 'bitbucket':
             [outs.append("bitbucket/" + Bitbucket.urlFriendlyRepoFullName(repo))
-                    for repo in json.loads(body(host.getOwnRepos(un)))]
+                    for repo in json.loads(body(host.getOwnRepos(un)))['values']]
         elif hn == 'gitlab':
             [outs.append("gitlab/" + Gitlab.urlFriendlyRepoFullName(repo))
                     for repo in json.loads(body(host.getOwnRepos(un)))]
