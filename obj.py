@@ -64,7 +64,6 @@ class Github:
             t = OAuthToken(token)
             if self.tokens is None:
                 self.tokens = {}
-            print(self.tokens)
             self.tokens.update({user: t})
             return t
         except KeyError:
@@ -223,7 +222,6 @@ class Gitlab:
             t = OAuthToken(token)
             if self.tokens is None:
                 self.tokens = {}
-            print(self.tokens)
             self.tokens.update({user: t})
             return t
         except KeyError:
@@ -346,7 +344,7 @@ def main():
     addp = subps.add_parser('add', help='未実装')
     addp.add_argument('-d', '--default', default=False, action="store_true",
             help='set user as default')
-    addp.add_argument('-t', '--token', help='get token from code')
+    addp.add_argument('-t', '--token', type=str, help='get token from code')
     addp.add_argument('-c', '--consumer', help='add consumer format key:secret')
     addp.add_argument('-u', '--user')
     addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
