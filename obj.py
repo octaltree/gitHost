@@ -79,7 +79,7 @@ class Github:
                 ]), ""))
     # :: Dict -> Str
     def urlFriendlyRepoFullName(repo):
-        return repo['fulll_name']
+        return repo['full_name']
     # :: Github -> Str -> IO urllib.request.HTTPResponse
     def getOwnRepos(self, user = None):
         if user is None:
@@ -332,8 +332,8 @@ def main():
     subps = mainp.add_subparsers()
 
     lsp = subps.add_parser('list', help='')
-    lsp.add_argument('-v', '--verbose', default=False, action="store_true")
-    lsp.add_argument('location', nargs='+', help='format user@host')
+    lsp.add_argument('-v', '--verbose', default=False, action="store_true", help="未実装")
+    lsp.add_argument('location', nargs='+', help='format user@host choised from ["github", "bitbucket", "gitlab"]')
     lsp.set_defaults(func=ls)
 
     addp = subps.add_parser('add', help='未実装')
@@ -357,8 +357,32 @@ tuplize = lambda *args: args
 # :: argparse.Namespace -> Dict -> IO ()
 def ls(args, conf):
     outs = [] # :: [Str]
+    for uh in args.location:
+        hn = hostname(uh)
+        host = conf.get(hn)
+        if host is None:
+            print('no configed', file=sys.stderr)
+            exit(1)
+        un = username(uh)
+        if hn == 'github':
+            [outs.append(Github.urlFriendlyRepoFullName(repo))
+                    for repo in json.loads(body(host.getOwnRepos(un)))]
+        elif hn == 'bitbucket':
+            [outs.append(Bitbucket.urlFriendlyRepoFullName(repo))
+                    for repo in json.loads(body(host.getOwnRepos(un)))]
+        elif hn == 'gitlab':
+            [outs.append(Gitlab.urlFriendlyRepoFullName(repo))
+                    for repo in json.loads(body(host.getOwnRepos(un)))]
     [print(i) for i in outs]
     return ()
+
+# :: Str -> Str
+def hostname(uh):
+    return uh[uh.find('@')+1:] if uh.find('@') != -1 else uh
+
+# :: Str -> Str
+def username(uh):
+    return uh[:uh.find('@')] if uh.find('@') != -1 else None
 
 # :: argparse.Namespace -> Dict -> IO ()
 def add(args, conf):
