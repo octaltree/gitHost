@@ -279,7 +279,8 @@ class Gitlab:
                     file=sys.stderr)
             exit(1)
         url = "https://gitlab.com/api/v3/projects"
-        headers = { "PRIVATE-TOKEN": "{0}".format(token.access_token)}
+        #headers = { "PRIVATE-TOKEN": "{0}".format(token.access_token)}
+        headers = { "Authorization": "Bearer {0}".format(token.access_token)}
         return http(urllib.request.Request(url, headers=headers))
     def newOwnRepo():
         return undefined
