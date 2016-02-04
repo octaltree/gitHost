@@ -3,12 +3,11 @@
 ## 機能
 4. oauth
 5. 鍵類読み込み
-6. 読み込み時の安全性
+3. 引数パース
+1. github, bitbucket, gitlab/gitlab.comのリポジトリ一覧を出力
 
 ## issue
 2. github, bitbucket, gitlab/gitlab.comにリポジトリ作成
-3. 引数パース
-1. github, bitbucket, gitlab/gitlab.comのリポジトリ一覧を出力
 
 ## config
 ~/.githost/config
