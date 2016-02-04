@@ -207,8 +207,8 @@ class Gitlab:
             exit("need consumerkey, secret to get access_token")
         url = "https://gitlab.com/oauth/token"
         data = urllib.parse.urlencode([
-            ("client_id", consumer.key),
-            ("client_secret", consumer.secret),
+            ("client_id", self.consumer.key),
+            ("client_secret", self.consumer.secret),
             ("code", code),
             ("grant_type", "authorization_code"),
             ("redirect_uri", URLOAUTHCALLBACK)
