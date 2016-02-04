@@ -337,9 +337,10 @@ def main():
     lsp.set_defaults(func=ls)
 
     addp = subps.add_parser('add', help='未実装')
-    addp.add_argument('-d', '--default', help='set default user')
+    addp.add_argument('-d', '--default', default=False, action="store_true",
+            help='set user as default')
     addp.add_argument('-t', '--token', help='get token from code')
-    addp.add_argument('-c', '--consumer', help='add consumer')
+    addp.add_argument('-c', '--consumer', help='add consumer format key:secret')
     addp.add_argument('-u', '--user')
     addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
     addp.set_defaults(func=add)
@@ -386,7 +387,38 @@ def username(uh):
 
 # :: argparse.Namespace -> Dict -> IO ()
 def add(args, conf):
-    return undefined
+    host = None
+    if conf.get(host.server) is None:
+        if host.server == "github":
+            host = Github()
+        elif host.server == "gitlab":
+            host = Gitlab()
+        elif host.server == "bitbucket":
+            host = Bitbucket()
+    else:
+        host = conf[host.server]
+
+    if args.default:
+        if args.user is None:
+            print("try to set default but no input. use -u", file=sys.stderr)
+            exit(1)
+        host.defaultuser = args.user
+        conf.update({args.host: host})
+    if args.token is not None:
+        if args.user is None:
+            print("use -u for save token", file=sys.stderr)
+            exit(1)
+        host.getOAuthToken(args.user, args.token)
+        conf.update({args.host: host})
+    if args.consumer is not None:
+        if args.consumer.find(':') == -1:
+            print("consumer format key:secret", file=sys.stderr)
+            exit(1)
+        key = lambda c: c[:c.find(':')]
+        secret = lambda c: c[c.find(':')+1:]
+        host.consumer = OAuthConsumer(key(args.consumer), secret(args.consumer))
+        conf.update({args.host: host})
+    return ()
 
 # :: IO ()
 def touchConfig():
