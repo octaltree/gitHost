@@ -365,13 +365,13 @@ def ls(args, conf):
             exit(1)
         un = username(uh)
         if hn == 'github':
-            [outs.append(Github.urlFriendlyRepoFullName(repo))
+            [outs.append("github/" + Github.urlFriendlyRepoFullName(repo))
                     for repo in json.loads(body(host.getOwnRepos(un)))]
         elif hn == 'bitbucket':
-            [outs.append(Bitbucket.urlFriendlyRepoFullName(repo))
+            [outs.append("bitbucket/" + Bitbucket.urlFriendlyRepoFullName(repo))
                     for repo in json.loads(body(host.getOwnRepos(un)))]
         elif hn == 'gitlab':
-            [outs.append(Gitlab.urlFriendlyRepoFullName(repo))
+            [outs.append("gitlab/" + Gitlab.urlFriendlyRepoFullName(repo))
                     for repo in json.loads(body(host.getOwnRepos(un)))]
     [print(i) for i in outs]
     return ()
