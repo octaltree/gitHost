@@ -339,6 +339,7 @@ def main():
 
     lsp = subps.add_parser('list', help='')
     lsp.add_argument('-v', '--verbose', default=False, action="store_true", help="未実装")
+    lsp.add_argument('-p', '--page', default=False, action="store_true", help='url for get OAuthCode')
     lsp.add_argument('location', nargs='+', help='format user@host choised from ["github", "bitbucket", "gitlab"]')
     lsp.set_defaults(func=ls)
 
@@ -364,6 +365,17 @@ tuplize = lambda *args: args
 
 # :: argparse.Namespace -> Dict -> IO ()
 def ls(args, conf):
+    if args.page:
+        outs = []
+        for uh in args.location:
+            hn = hostname(uh)
+            host = conf.get(hn)
+            if host is None:
+                print('no configed', file=sys.stderr)
+                exit(1)
+            outs.append(host.urlOAuthCode())
+        [print(i) for i in outs]
+        return ()
     outs = [] # :: [Str]
     for uh in args.location:
         hn = hostname(uh)
