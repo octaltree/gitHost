@@ -361,6 +361,7 @@ def main():
     addp.add_argument('-c', '--consumer', help='add consumer format key:secret')
     addp.add_argument('-u', '--user')
     addp.add_argument('-s', '--server', required=True, choices=['github', 'bitbucket', 'gitlab'])
+    addp.add_argument('-r', '--refresh', default=False, action="store_true")
     addp.set_defaults(func=add)
 
     # 引数パースする前にconfig読み込んでおく
